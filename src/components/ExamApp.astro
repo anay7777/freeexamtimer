@@ -1,0 +1,580 @@
+<div id="exam-app">
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- Settings Drawer -->
+  <aside class="settings-panel" id="settings-panel" aria-label="Settings panel">
+    <div class="flex items-center justify-between border-b border-[var(--border-color)] px-5 py-4">
+      <div class="flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <h2 class="text-base font-semibold">Exam Timer Settings</h2>
+      </div>
+      <button class="btn-app h-8 w-8 min-h-0 min-w-0 p-0 text-xs" id="btn-close-settings" type="button" aria-label="Close settings">✕</button>
+    </div>
+    <div class="flex flex-col gap-6 px-5 py-5 pb-24 md:pb-6">
+      <section>
+        <p class="eyebrow mb-3">Display & Clock</p>
+        <div class="flex flex-col gap-3">
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Dark mode</span>
+            <span class="toggle"><input type="checkbox" id="toggle-dark" /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Always show seconds</span>
+            <span class="toggle"><input type="checkbox" id="toggle-seconds" checked /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]" title="Hide seconds during the bulk of the exam and only show in final 5 minutes to reduce student anxiety">
+            <span>Hide seconds until final 5m <span class="text-xs text-[var(--text-muted)]">(calm)</span></span>
+            <span class="toggle"><input type="checkbox" id="toggle-anxiety-seconds" /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>12-hour clock (AM/PM)</span>
+            <span class="toggle"><input type="checkbox" id="toggle-hour12" /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Show +25% extra finish time</span>
+            <span class="toggle"><input type="checkbox" id="toggle-extra-clock" checked /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Visual flash when finished</span>
+            <span class="toggle"><input type="checkbox" id="toggle-flash" checked /><span></span></span>
+          </label>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Keep screen awake (No sleep)</span>
+            <span class="toggle"><input type="checkbox" id="toggle-wakelock" checked /><span></span></span>
+          </label>
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[13px] text-[var(--text-muted)]">Timer size</span>
+              <span class="font-mono text-xs text-[var(--text-muted)]" id="label-size">100%</span>
+            </div>
+            <input type="range" id="range-size" min="70" max="150" value="100" aria-label="Timer display size" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow mb-3">Sound & Chimes</p>
+        <div class="flex flex-col gap-3">
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
+            <span>Silent hall (Visual alerts only)</span>
+            <span class="toggle"><input type="checkbox" id="toggle-silent" /><span></span></span>
+          </label>
+          <div>
+            <label class="mb-1.5 block text-[13px] text-[var(--text-muted)]" for="select-sound">Chime sound</label>
+            <select id="select-sound" class="field">
+              <option value="bell">Harmonic Exam Bell</option>
+              <option value="gong">Hall Gong (Resonant)</option>
+              <option value="chime">Gentle Chime (3-tone)</option>
+              <option value="beep">Digital Beep</option>
+              <option value="buzzer">Soft Buzzer</option>
+            </select>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[13px] text-[var(--text-muted)]">Volume</span>
+              <span class="font-mono text-xs text-[var(--text-muted)]" id="label-volume">70%</span>
+            </div>
+            <input type="range" id="range-volume" min="0" max="100" value="70" aria-label="Volume" />
+          </div>
+          <button class="btn-app w-full text-xs" id="btn-test-sound" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            Play test sound
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow mb-3">Warning Notifications</p>
+        <p class="mb-3 text-[13px] text-[var(--text-muted)]">Chime when remaining writing time reaches:</p>
+        <div class="flex flex-col gap-2.5">
+          <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+            <input type="checkbox" id="warn-30" /> 30 minutes remaining
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+            <input type="checkbox" id="warn-15" checked /> 15 minutes remaining
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+            <input type="checkbox" id="warn-10" /> 10 minutes remaining
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+            <input type="checkbox" id="warn-5" checked /> 5 minutes remaining
+          </label>
+          <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
+            <input type="checkbox" id="warn-1" checked /> 1 minute remaining
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow mb-3">Keyboard Shortcuts</p>
+        <div class="flex flex-col gap-2 text-[13px] text-[var(--text-secondary)]">
+          <div class="flex justify-between items-center"><span>Start / Pause</span><kbd>Space</kbd></div>
+          <div class="flex justify-between items-center"><span>Reset exam</span><kbd>R</kbd></div>
+          <div class="flex justify-between items-center"><span>Full screen hall display</span><kbd>F</kbd></div>
+          <div class="flex justify-between items-center"><span>Toggle dark theme</span><kbd>D</kbd></div>
+          <div class="flex justify-between items-center"><span>Open / close settings</span><kbd>S</kbd></div>
+          <div class="flex justify-between items-center"><span>Exit / Close modals</span><kbd>Esc</kbd></div>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Fullscreen Hall Projection View -->
+  <div id="fullscreen-overlay" aria-label="Hall display projection">
+    <div class="w-full max-w-5xl px-6 flex flex-col items-center">
+      <div class="flex items-center gap-3">
+        <span id="fs-phase-chip" class="badge-ready rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">Ready</span>
+        <span id="fs-extra-badge" class="hidden rounded-full bg-[#ffefcf] px-3 py-1 text-xs font-semibold text-[#ab570a]">Extended</span>
+      </div>
+
+      <h2 class="mt-4 text-center text-xl md:text-2xl font-semibold tracking-tight text-[var(--text-primary)] min-h-7" id="fs-title"></h2>
+      <p class="text-center text-sm text-[var(--text-muted)] min-h-5" id="fs-centre"></p>
+      <p class="mt-1 text-center text-xs md:text-sm font-medium text-[var(--color-link)] min-h-5" id="fs-directive"></p>
+
+      <!-- Giant Countdown Numbers -->
+      <div
+        id="fs-timer"
+        class="timer-digit mt-6 text-center text-[clamp(64px,16vw,190px)] leading-none font-semibold text-[var(--timer-text)] tracking-tight select-none"
+      >
+        01:00:00
+      </div>
+
+      <!-- Projector Progress Bar -->
+      <div class="mt-6 w-full max-w-2xl">
+        <div class="h-2 overflow-hidden rounded-full bg-[var(--border-color)]">
+          <div id="fs-fill" class="h-full w-full bg-[var(--text-primary)] transition-[width] duration-200"></div>
+        </div>
+      </div>
+
+      <!-- Hall Clocks Row -->
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-3xl text-center">
+        <div class="card p-3 bg-[var(--bg-card)]">
+          <p class="eyebrow">Current Time</p>
+          <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-current">—</p>
+        </div>
+        <div class="card p-3 bg-[var(--bg-card)]">
+          <p class="eyebrow">Start Time</p>
+          <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-start">—</p>
+        </div>
+        <div class="card p-3 bg-[var(--bg-card)]">
+          <p class="eyebrow">Finish Time</p>
+          <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-finish">—</p>
+        </div>
+        <div class="card p-3 bg-[var(--bg-card)]" id="fs-box-extra-finish">
+          <p class="eyebrow text-[#ab570a] dark:text-[#f7b750]">+25% Extra Finish</p>
+          <p class="mt-1 font-mono text-base md:text-xl font-medium text-[#ab570a] dark:text-[#f7b750]" id="fs-extra-finish">—</p>
+        </div>
+      </div>
+
+      <!-- Instructions banner in fullscreen -->
+      <div id="fs-instructions-wrap" class="mt-6 w-full max-w-2xl hidden">
+        <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-3 text-center text-sm text-[var(--text-secondary)] font-medium">
+          <span class="mr-1.5">📌</span> <span id="fs-instructions-text"></span>
+        </div>
+      </div>
+
+      <!-- Floating Controls on Hover -->
+      <div id="fs-controls-wrap" class="mt-10 flex flex-wrap justify-center gap-2.5">
+        <button class="btn-app btn-app-primary px-5" id="fs-btn-start" type="button">Start exam</button>
+        <button class="btn-app px-4 hidden" id="fs-btn-pause" type="button">Pause</button>
+        <button class="btn-app px-4 hidden" id="fs-btn-add-5" type="button">+5 min extra</button>
+        <button class="btn-app px-4" id="fs-btn-reset" type="button">Reset</button>
+        <button class="btn-app px-4" id="fs-btn-exit" type="button" aria-label="Exit full screen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+          Exit (Esc)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Web Content -->
+  <main class="hero-mesh min-h-screen pt-14 pb-[96px] md:pb-12">
+    <div class="relative z-[1] mx-auto max-w-[960px] px-4 pt-6 pb-16 md:px-6 md:pt-10">
+      
+      <!-- Header eyebrow & Intro -->
+      <div class="text-center md:text-left">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-elevated)] px-3 py-1 text-xs font-mono text-[var(--text-muted)]">
+          <span class="inline-block h-2 w-2 rounded-full bg-[#50e3c2]"></span>
+          Official Exam Countdown Clock
+        </div>
+        <h1 class="mt-3 text-[32px] leading-[36px] font-semibold tracking-[-1.5px] sm:text-4xl md:text-5xl md:leading-tight">
+          Exam Countdown & Hall Display
+        </h1>
+        <p class="mt-2.5 max-w-2xl text-sm md:text-base leading-6 text-[var(--text-secondary)]">
+          Dedicated exam timer for teachers and invigilators. Reading time handoff, +25% access arrangement clocks, and full-screen projector mode.
+        </p>
+      </div>
+
+      <!-- Primary Timer Display Card -->
+      <section id="display-card" class="card mt-6 p-5 md:p-8 text-center shadow-xs">
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          <span id="phase-chip" class="badge-ready rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">
+            Ready to start
+          </span>
+          <span id="extra-badge" class="hidden rounded-full bg-[#ffefcf] px-3 py-1 text-xs font-semibold text-[#ab570a]">
+            Extended
+          </span>
+        </div>
+
+        <p id="display-title" class="mt-3 min-h-5 text-base md:text-lg font-semibold text-[var(--text-primary)]"></p>
+        <p id="display-centre" class="text-xs text-[var(--text-muted)] min-h-4"></p>
+        <p id="phase-directive" class="mt-1 text-xs md:text-sm font-medium text-[var(--color-link)] min-h-5">
+          Verify duration and press Start exam
+        </p>
+
+        <!-- Giant Timer Readout -->
+        <div
+          id="timer-display"
+          class="timer-digit mt-5 text-[clamp(52px,13vw,104px)] leading-none font-semibold text-[var(--timer-text)] tracking-tight select-none"
+        >
+          01:00:00
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mx-auto mt-6 h-1.5 max-w-lg overflow-hidden rounded-full bg-[var(--border-color)]">
+          <div id="progress-fill" class="h-full w-full bg-[var(--text-primary)] transition-[width] duration-200"></div>
+        </div>
+
+        <!-- 4 Clocks Grid (Live wall clock, Start, Standard finish, +25% extra finish) -->
+        <div class="mt-7 grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:gap-3 text-center">
+          <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
+            <p class="eyebrow">Current</p>
+            <p id="clock-current" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
+          </div>
+          <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
+            <p class="eyebrow">Start</p>
+            <p id="clock-start" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
+          </div>
+          <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
+            <p class="eyebrow">Finish</p>
+            <p id="clock-finish" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
+          </div>
+          <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5" id="box-extra-finish">
+            <p class="eyebrow text-[#ab570a] dark:text-[#f7b750]">+25% Finish</p>
+            <p id="clock-extra-finish" class="mt-1 font-mono text-sm md:text-base font-medium text-[#ab570a] dark:text-[#f7b750]">—</p>
+          </div>
+        </div>
+
+        <!-- Active Instructions Callout -->
+        <div id="instructions-callout" class="mt-5 hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-3 text-left text-xs md:text-sm text-[var(--text-secondary)]">
+          <div class="flex items-start gap-2">
+            <span class="mt-0.5 text-base">📌</span>
+            <div>
+              <p class="font-semibold text-[var(--text-primary)]">Exam Hall Notice:</p>
+              <p id="instructions-live" class="mt-0.5 whitespace-pre-line"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Desktop Primary Action Toolbar -->
+      <div
+        class="card mt-4 hidden p-3 md:flex md:flex-wrap md:items-center md:justify-center md:gap-2.5"
+        id="desktop-controls"
+      >
+        <button class="btn-pill min-w-[140px]" id="btn-start" type="button">Start exam</button>
+        <button class="btn-app hidden" id="btn-pause" type="button">Pause</button>
+        <button class="btn-app" id="btn-reset" type="button">Reset</button>
+        <button class="btn-app hidden" id="btn-add-5" type="button" title="Add 5 minutes writing time">+5 min extra</button>
+        <button class="btn-app hidden" id="btn-add-15" type="button" title="Add 15 minutes writing time">+15 min</button>
+        <button class="btn-app hidden" id="btn-add-25pct" type="button" title="Add standard 25% access arrangement extra time">+25% Extra</button>
+        <button class="btn-app" id="btn-hall-fullscreen" type="button" title="Project to full screen (F)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          Full screen
+        </button>
+        <button class="btn-app" id="btn-share" type="button" title="Copy shareable link with current exam configuration">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Share link
+        </button>
+      </div>
+
+      <!-- Exam Configuration & Setup Card -->
+      <section class="card mt-4 p-5 md:p-6" id="setup-card">
+        <div class="mb-4 flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+          <div class="flex items-center gap-2">
+            <p class="eyebrow">Exam Configuration</p>
+            <span class="text-xs text-[var(--text-muted)]">(editable while idle)</span>
+          </div>
+          <button class="btn-app h-7 min-h-0 px-2.5 text-xs md:hidden" id="btn-toggle-setup" type="button">Hide</button>
+        </div>
+
+        <div id="setup-body" class="flex flex-col gap-5">
+          <!-- Title & Paper details -->
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-title">
+                Exam Title & Subject
+              </label>
+              <input class="field" id="input-title" type="text" maxlength="80" placeholder="e.g. Mathematics Paper 1 (Higher Tier)" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-centre">
+                Centre / Room Number <span class="font-normal text-[var(--text-muted)]">(optional)</span>
+              </label>
+              <input class="field" id="input-centre" type="text" maxlength="80" placeholder="e.g. Centre 54321 · Sports Hall Desk A" />
+            </div>
+          </div>
+
+          <!-- Exam Length (Writing Time) & Presets -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-[13px] font-medium text-[var(--text-secondary)]">Writing Duration (Hours : Minutes : Seconds)</label>
+              <span class="text-xs text-[var(--text-muted)]">Exclusive of reading time</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <span class="text-xs text-[var(--text-muted)]">Hours</span>
+                <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-hours" type="number" min="0" max="12" value="1" />
+              </div>
+              <div>
+                <span class="text-xs text-[var(--text-muted)]">Minutes</span>
+                <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-minutes" type="number" min="0" max="59" value="0" />
+              </div>
+              <div>
+                <span class="text-xs text-[var(--text-muted)]">Seconds</span>
+                <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-seconds" type="number" min="0" max="59" value="0" />
+              </div>
+            </div>
+
+            <!-- Fast Duration Presets -->
+            <div class="mt-2.5 flex flex-wrap gap-1.5 items-center">
+              <span class="text-xs text-[var(--text-muted)] mr-1">Quick presets:</span>
+              <button class="btn-preset" type="button" data-preset="15">15 min</button>
+              <button class="btn-preset" type="button" data-preset="30">30 min</button>
+              <button class="btn-preset" type="button" data-preset="45">45 min</button>
+              <button class="btn-preset" type="button" data-preset="60">1 hr</button>
+              <button class="btn-preset" type="button" data-preset="75">1h 15m</button>
+              <button class="btn-preset" type="button" data-preset="90">1.5 hr</button>
+              <button class="btn-preset" type="button" data-preset="105">1h 45m</button>
+              <button class="btn-preset" type="button" data-preset="120">2 hr</button>
+              <button class="btn-preset" type="button" data-preset="150">2.5 hr</button>
+              <button class="btn-preset" type="button" data-preset="180">3 hr</button>
+            </div>
+          </div>
+
+          <!-- Reading Time & Extra Time Row -->
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-reading">
+                Reading Time (Minutes)
+              </label>
+              <input class="field font-mono" id="input-reading" type="number" min="0" max="60" value="0" />
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                <button class="btn-preset" type="button" data-reading="0">None</button>
+                <button class="btn-preset" type="button" data-reading="5">5 min</button>
+                <button class="btn-preset" type="button" data-reading="10">10 min</button>
+                <button class="btn-preset" type="button" data-reading="15">15 min</button>
+              </div>
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Hands off automatically into writing time when finished.</p>
+            </div>
+
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-extra">
+                Extra Time / Access Arrangements (Minutes)
+              </label>
+              <input class="field font-mono" id="input-extra" type="number" min="0" max="180" value="0" />
+              <div class="mt-2 flex flex-wrap gap-1.5 items-center">
+                <button class="btn-preset" type="button" data-extra="0">None</button>
+                <button class="btn-preset" type="button" data-extra="5">+5m</button>
+                <button class="btn-preset" type="button" data-extra="15">+15m</button>
+                <button class="btn-preset font-sans" type="button" id="btn-calc-25pct" title="Calculate exactly 25% extra writing time">+25% Calc</button>
+              </div>
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Calculates official extended finish clock on the display.</p>
+            </div>
+          </div>
+
+          <!-- Auto start & Notice -->
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-autostart">
+                Automatic Scheduled Start <span class="font-normal text-[var(--text-muted)]">(optional)</span>
+              </label>
+              <input class="field font-mono" id="input-autostart" type="time" />
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Starts automatically when wall clock hits this exact time.</p>
+            </div>
+
+            <div>
+              <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-instructions">
+                Invigilator Notice / Rules for Screen
+              </label>
+              <textarea class="field min-h-[76px] resize-y" id="input-instructions" maxlength="400" placeholder="e.g. Silence at all times. Black ballpoint pen only. No mobile phones or smartwatches."></textarea>
+            </div>
+          </div>
+
+          <!-- Quick rules insertion chips -->
+          <div>
+            <span class="text-xs text-[var(--text-muted)] block mb-1.5">Add common exam rules to instructions:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button class="chip-rule" type="button" data-add-rule="Silence at all times in the examination room.">+ Silence at all times</button>
+              <button class="chip-rule" type="button" data-add-rule="All mobile phones and smartwatches must be switched off and placed in bags.">+ No phones / smartwatches</button>
+              <button class="chip-rule" type="button" data-add-rule="Black ink or ballpoint pen only. Do not use correcting fluid.">+ Black pen only</button>
+              <button class="chip-rule" type="button" data-add-rule="Check that you have the correct examination paper.">+ Check paper details</button>
+              <button class="chip-rule" type="button" data-add-rule="Raise your hand if you require extra paper or assistance.">+ Raise hand for help</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why this is the best exam timer -->
+      <section class="mt-14">
+        <p class="eyebrow mb-2 text-center">Built specifically for real exam halls</p>
+        <h2 class="text-center text-[28px] md:text-[32px] leading-tight font-semibold tracking-tight">
+          Everything an invigilator needs — and nothing they don't
+        </h2>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">📘</span>
+              <h3 class="text-base font-semibold">Reading then writing</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              Optional reading time counts down first with clear instructions, then automatically hands over into writing time with an audible tone.
+            </p>
+          </article>
+
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">⏱️</span>
+              <h3 class="text-base font-semibold">Dual finish clocks</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              Calculates both standard finish time and +25% access arrangement finish time side-by-side. No mental math on the whiteboard.
+            </p>
+          </article>
+
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">📺</span>
+              <h3 class="text-base font-semibold">Projector hall mode</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              One-click full screen with giant tabular numerals readable from 30+ meters away at the back of the gym or assembly hall.
+            </p>
+          </article>
+
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🛡️</span>
+              <h3 class="text-base font-semibold">Drift-free & crash-proof</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              Uses system timestamp deltas, not fragile tick intervals. Accidental browser refresh or tab close restores the running exam instantly.
+            </p>
+          </article>
+
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🔔</span>
+              <h3 class="text-base font-semibold">Synthesized chimes</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              Synthesized via Web Audio API without external audio files. 15m, 10m, 5m, and 1m warnings, or silent hall visual flash.
+            </p>
+          </article>
+
+          <article class="card p-5">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🔗</span>
+              <h3 class="text-base font-semibold">Shareable exam links</h3>
+            </div>
+            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+              Encode paper name, length, reading time, and notices directly into a shareable URL to sync multiple examination rooms.
+            </p>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile Fixed Bottom Action Bar -->
+  <nav
+    class="fixed right-0 bottom-0 left-0 z-[90] border-t border-[var(--border-color)] bg-[var(--bg-primary)] px-3 pt-2 pb-[max(10px,env(safe-area-inset-bottom))] md:hidden"
+    id="mobile-nav"
+    aria-label="Mobile exam controls"
+  >
+    <div class="flex items-center gap-2">
+      <button class="btn-app btn-app-primary flex-1 font-semibold" id="mob-start" type="button">Start exam</button>
+      <button class="btn-app hidden flex-1 font-semibold" id="mob-pause" type="button">Pause</button>
+      <button class="btn-app px-3" id="mob-reset" type="button">Reset</button>
+      <button class="btn-app hidden px-3" id="mob-add" type="button" title="Add 5 min">+5</button>
+      <button class="btn-app px-3" id="mob-fullscreen" type="button" aria-label="Full screen">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+      </button>
+      <button class="btn-app px-3" id="mob-settings" type="button" aria-label="Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83-2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Toast notifications -->
+  <div
+    id="toast-container"
+    class="pointer-events-none fixed bottom-20 left-1/2 z-[999] flex -translate-x-1/2 flex-col items-center gap-2"
+  ></div>
+
+  <!-- Reset Confirmation Modal -->
+  <div
+    id="reset-modal"
+    class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+  >
+    <div class="card w-full max-w-sm p-6 shadow-xl animate-in fade-in duration-150">
+      <div class="flex items-center gap-2.5 text-[#ee0000]">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <h2 class="text-lg font-semibold text-[var(--text-primary)]">Reset current exam?</h2>
+      </div>
+      <p class="mt-2.5 text-sm text-[var(--text-secondary)]">
+        The timer will stop and revert to idle. Any elapsed time and extra time will be reset.
+      </p>
+      <div class="mt-6 flex gap-2.5">
+        <button class="btn-app btn-app-primary flex-1 font-medium bg-[#ee0000] border-[#ee0000] text-white" id="confirm-reset" type="button">Reset Exam</button>
+        <button class="btn-app flex-1" id="cancel-reset" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time is Up Modal -->
+  <div
+    id="done-modal"
+    class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+  >
+    <div class="card w-full max-w-md p-8 text-center shadow-2xl animate-in zoom-in-95 duration-200">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#ffe6e6] text-[#c50000] dark:bg-[#380707] dark:text-[#ff6b6b]">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <p class="eyebrow mt-4 text-[#c50000] dark:text-[#ff6b6b]">Exam Completed</p>
+      <h2 class="mt-1 text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]" id="done-title">PENS DOWN — TIME IS UP</h2>
+      <p class="mt-2 text-sm text-[var(--text-secondary)]" id="done-sub">All candidates must stop writing immediately and remain seated in silence until papers are collected.</p>
+      <button class="btn-pill mt-6 w-full" id="dismiss-done" type="button">Acknowledge & Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { bootExamUi } from '../scripts/exam-ui';
+  bootExamUi();
+</script>
