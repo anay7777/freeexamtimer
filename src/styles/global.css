@@ -30,6 +30,7 @@
 }
 
 :root {
+  color-scheme: light;
   --bg-primary: #fafafa;
   --bg-elevated: #ffffff;
   --bg-card: #ffffff;
@@ -41,6 +42,7 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-primary: #0a0a0a;
   --bg-elevated: #111111;
   --bg-card: #171717;
@@ -432,5 +434,81 @@ input[type="range"]::-webkit-slider-thumb {
   .settings-panel.open {
     transform: translateY(0);
   }
+}
+
+/* ─── SEO Content Article ──────────────────────────────── */
+.prose-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 3rem;
+}
+
+.seo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.seo-block h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.seo-block p {
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.seo-block ul,
+.seo-block ol {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seo-block ul {
+  list-style: disc;
+}
+
+.seo-block ol {
+  list-style: decimal;
+}
+
+.seo-block li {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.seo-block strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* FAQ definition list */
+.seo-faq dt {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 1rem;
+}
+
+.seo-faq dt:first-child {
+  margin-top: 0;
+}
+
+.seo-faq dd {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-left: 0;
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--border-color);
 }
 
