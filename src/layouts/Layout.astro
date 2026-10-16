@@ -1,21 +1,37 @@
 ---
-import '../styles/global.css';
+import "../styles/global.css";
+import { faqItems } from "../data/faq";
 
 interface Props {
   title?: string;
   description?: string;
   canonicalUrl?: string;
   ogImage?: string;
+  includeFaq?: boolean;
 }
 
 const {
-  title = 'Free Exam Timer — Free Online Exam Countdown Clock | FreeExamTimer',
-  description = 'Free exam timer for teachers, invigilators & students. Set reading time, writing time, extra time (+25%), full-screen hall display, and audible chimes. Works for SAT, GRE, IELTS, JEE, NEET, GCSE, IB & more. No ads, no signup.',
-  canonicalUrl = 'https://freeexamtimer.com/',
-  ogImage = 'https://freeexamtimer.com/og-image.png',
+  title = "Free Exam Timer — Free Online Exam Countdown Clock | FreeExamTimer",
+  description = "Free exam timer for teachers, invigilators & students. Set reading time, writing time, extra time (+25%), full-screen hall display, and audible chimes. Works for SAT, GRE, IELTS, JEE, NEET, GCSE, IB & more. No ads, no signup.",
+  canonicalUrl = "https://freeexamtimer.com/",
+  ogImage = "https://freeexamtimer.com/og-image.png",
+  includeFaq = false,
 } = Astro.props;
 
-const siteName = 'FreeExamTimer';
+const siteName = "FreeExamTimer";
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer,
+    },
+  })),
+};
 ---
 
 <!doctype html>
@@ -23,7 +39,10 @@ const siteName = 'FreeExamTimer';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -46,7 +65,10 @@ const siteName = 'FreeExamTimer';
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="FreeExamTimer — Free Online Exam Countdown Clock" />
+    <meta
+      property="og:image:alt"
+      content="FreeExamTimer — Free Online Exam Countdown Clock"
+    />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
@@ -54,95 +76,57 @@ const siteName = 'FreeExamTimer';
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="twitter:image:alt" content="FreeExamTimer — Free Online Exam Countdown Clock" />
+    <meta
+      name="twitter:image:alt"
+      content="FreeExamTimer — Free Online Exam Countdown Clock"
+    />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <!-- Schema.org Structured Data -->
+    <!-- Schema.org WebApplication -->
     <script type="application/ld+json" is:inline>
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebApplication",
-          "@id": "https://freeexamtimer.com/#webapp",
-          "name": "FreeExamTimer",
-          "url": "https://freeexamtimer.com/",
-          "description": "Free online exam timer for teachers, invigilators and students. Features reading time, writing time, extra time (+25% access arrangements), full-screen hall display, audible chimes, and shareable exam links.",
-          "applicationCategory": "EducationalApplication",
-          "operatingSystem": "Any",
-          "browserRequirements": "Requires a modern web browser with JavaScript enabled",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          },
-          "featureList": [
-            "Exam countdown timer",
-            "Reading time phase with auto-handoff",
-            "Extra time / access arrangements (+25%)",
-            "Full-screen projector hall display",
-            "Audible chimes and warning alerts",
-            "Shareable exam configuration links",
-            "Digital exam timer with dark mode",
-            "Supports SAT, GRE, IELTS, JEE, NEET, GCSE, IB, CAT, CLAT, UPSC, ACT, Gaokao, ENEM, AP exams"
-          ],
-          "publisher": {
-            "@type": "Organization",
-            "name": "FreeExamTimer",
-            "url": "https://freeexamtimer.com/"
-          }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "@id": "https://freeexamtimer.com/#webapp",
+        "name": "FreeExamTimer",
+        "url": "https://freeexamtimer.com/",
+        "description": "Free online exam timer for teachers, invigilators and students. Features reading time, writing time, extra time (+25% access arrangements), full-screen hall display, audible chimes, and shareable exam links.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
         },
-        {
-          "@type": "FAQPage",
-          "@id": "https://freeexamtimer.com/#faq",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "Is this exam timer completely free?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. FreeExamTimer is 100% free with no ads, no signup, and no premium tier. Every feature — reading time, extra time, full-screen hall mode, chimes — is available at no cost."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Can I use this timer for SAT, GRE, IELTS, or other competitive exams?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Absolutely. FreeExamTimer works for any timed exam including SAT, GRE, ACT, IELTS, AP, IB, GCSE, JEE, NEET, CAT, CLAT, UPSC, Gaokao, ENEM, and more. Simply set the exam duration that matches the official allowed time."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Does the exam timer support reading time?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. You can set a separate reading time (e.g. 5 or 10 minutes). The timer counts down the reading phase first with clear on-screen instructions, then automatically hands over into writing time with an audible chime."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How does the extra time feature work?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Enter the number of extra minutes in the Extra Time field, or click the +25% Calc button to automatically calculate the standard 25% access arrangement allowance. The display shows both a standard finish clock and a separate extended finish clock simultaneously."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Can I display the exam timer full screen for a hall or projector?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. Press the Full Screen button or the F key to enter hall projection mode. The countdown digits scale up to 190px — clearly readable from 30+ metres away — alongside start time, finish time, and extended finish time clocks."
-              }
-            }
-          ]
+        "featureList": [
+          "Exam countdown timer",
+          "Reading time phase with auto-handoff",
+          "Extra time / access arrangements (+25%)",
+          "Full-screen projector hall display",
+          "Audible chimes and warning alerts",
+          "Shareable exam configuration links",
+          "Digital exam timer with dark mode",
+          "Supports SAT, GRE, IELTS, JEE, NEET, GCSE, IB, CAT, CLAT, UPSC, ACT, Gaokao, ENEM, AP exams"
+        ],
+        "publisher": {
+          "@type": "Organization",
+          "name": "FreeExamTimer",
+          "url": "https://freeexamtimer.com/"
         }
-      ]
-    }
+      }
     </script>
+
+    <!-- Schema.org FAQPage -->
+    {includeFaq && (
+      <script
+        type="application/ld+json"
+        is:inline
+        set:html={JSON.stringify(faqJsonLd, null, 2)}
+      />
+    )}
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -156,9 +140,12 @@ const siteName = 'FreeExamTimer';
     <script is:inline>
       (function () {
         try {
-          const t = localStorage.getItem('fet-theme');
-          if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.setAttribute('data-theme', 'dark');
+          const t = localStorage.getItem("fet-theme");
+          if (
+            t === "dark" ||
+            (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
+          ) {
+            document.documentElement.setAttribute("data-theme", "dark");
           }
         } catch (e) {}
       })();

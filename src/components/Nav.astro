@@ -1,6 +1,6 @@
 ---
 interface Props {
-  active?: 'home' | 'how-to';
+  active?: 'home' | 'how-to' | 'faq';
   examControls?: boolean;
 }
 const { active = 'home', examControls = false } = Astro.props;
@@ -36,6 +36,13 @@ const { active = 'home', examControls = false } = Astro.props;
         'rounded-full px-3 py-2 text-sm',
         active === 'how-to' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
       ]}>How to use</a
+    >
+    <a
+      href="/faq"
+      class:list={[
+        'rounded-full px-3 py-2 text-sm',
+        active === 'faq' ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
+      ]}>FAQ</a
     >
   </div>
 
