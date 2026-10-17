@@ -1,0 +1,120 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="404 — Page Not Found | FreeExamTimer"
+  description="The page you requested could not be found. Return to FreeExamTimer to access the free online exam countdown clock."
+  canonicalUrl="https://freeexamtimer.com/404"
+>
+  <Nav active="" />
+
+  <main class="mx-auto max-w-[760px] px-5 pt-24 pb-20">
+    <!-- Status Badge -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-elevated)] text-xs font-mono text-[var(--text-secondary)]">
+      <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+      <span>Error 404 · Page Not Found</span>
+    </div>
+
+    <!-- Big Code & Heading -->
+    <div class="text-[72px] md:text-[96px] font-bold font-mono tracking-[-4px] leading-none text-[var(--text-primary)] my-3">
+      404
+    </div>
+
+    <h1 class="text-[32px] md:text-[40px] leading-[40px] md:leading-[46px] font-semibold tracking-[-2px] text-[var(--text-primary)]">
+      Exam paper missing — page not found
+    </h1>
+
+    <p class="mt-4 text-base md:text-lg leading-relaxed text-[var(--text-secondary)] max-w-[580px]">
+      The page or exam link you're looking for doesn't exist, has been relocated, or the URL was entered incorrectly. Don't worry — your timer settings and stored preferences are safe.
+    </p>
+
+    <!-- CTAs -->
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      <a href="/" class="btn-pill">
+        <span>Back to Exam Timer</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+      <a href="/how-to" class="btn-app">
+        How to Use
+      </a>
+      <a href="/faq" class="btn-app">
+        Help & FAQ
+      </a>
+    </div>
+
+    <!-- Helpful Quick Links Grid -->
+    <div class="mt-12">
+      <p class="eyebrow mb-4">Quick Navigation</p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <a href="/" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Online Exam Clock
+            </h2>
+            <span class="text-xs font-mono text-[var(--text-muted)]">Main app →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Full-screen countdown timer with reading time, +25% extra time calc, and hall projection display.
+          </p>
+        </a>
+
+        <a href="/how-to" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Setup Guide
+            </h2>
+            <span class="text-xs font-mono text-[var(--text-muted)]">Guide →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Step-by-step instructions for invigilators, teachers, and exam hall coordinators.
+          </p>
+        </a>
+
+        <a href="/faq" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Frequently Asked Questions
+            </h2>
+            <span class="text-xs font-mono text-[var(--text-muted)]">FAQ →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Answers regarding audio alerts, offline resilience, projector sizing, and device support.
+          </p>
+        </a>
+
+        <a href="/contact" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Contact & Support
+            </h2>
+            <span class="text-xs font-mono text-[var(--text-muted)]">Help →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Found a broken link or need assistance with your exam hall setup? Contact the team.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tip Banner -->
+    <div class="card mt-8 p-4 bg-[var(--bg-card)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[var(--text-secondary)]">
+      <div class="flex items-center gap-2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-500 shrink-0">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Looking for a preset timer? You can configure any examination duration directly on the main clock.</span>
+      </div>
+      <a href="/" class="text-[var(--color-link)] font-medium hover:underline shrink-0">Open Clock &rarr;</a>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

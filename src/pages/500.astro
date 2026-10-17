@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="500 — Server Error | FreeExamTimer"
+  description="An unexpected error occurred. Return to FreeExamTimer to access the free online exam countdown clock."
+  canonicalUrl="https://freeexamtimer.com/500"
+>
+  <Nav active="" />
+
+  <main class="mx-auto max-w-[760px] px-5 pt-24 pb-20">
+    <!-- Status Badge -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-elevated)] text-xs font-mono text-[var(--text-secondary)]">
+      <span class="h-2 w-2 rounded-full bg-[var(--color-error)] animate-pulse"></span>
+      <span>Error 500 · Internal Server Error</span>
+    </div>
+
+    <!-- Big Code & Heading -->
+    <div class="text-[72px] md:text-[96px] font-bold font-mono tracking-[-4px] leading-none text-[var(--text-primary)] my-3">
+      500
+    </div>
+
+    <h1 class="text-[32px] md:text-[40px] leading-[40px] md:leading-[46px] font-semibold tracking-[-2px] text-[var(--text-primary)]">
+      Something interrupted the timer
+    </h1>
+
+    <p class="mt-4 text-base md:text-lg leading-relaxed text-[var(--text-secondary)] max-w-[580px]">
+      An unexpected internal server error occurred while processing this request. FreeExamTimer runs locally in your web browser, so reloading the page or returning home usually resolves this immediately.
+    </p>
+
+    <!-- CTAs -->
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        onclick="window.location.reload()"
+        class="btn-pill cursor-pointer"
+      >
+        <span>Reload Page</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
+      <a href="/" class="btn-app">
+        Return to Timer
+      </a>
+      <a href="/contact" class="btn-app">
+        Report an Issue
+      </a>
+    </div>
+
+    <!-- Reassurance / Offline Status Card -->
+    <div class="mt-12 card p-6 bg-[var(--bg-elevated)]">
+      <h2 class="text-sm font-semibold text-[var(--text-primary)] mb-3">
+        Why FreeExamTimer remains reliable during exams
+      </h2>
+      <ul class="space-y-3 text-xs md:text-sm text-[var(--text-secondary)] leading-relaxed">
+        <li class="flex items-start gap-2.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></span>
+          <span><strong>Client-Side Engine:</strong> Once loaded, the countdown clock, audio chimes, and phase transitions run entirely inside your browser's local JavaScript runtime without relying on constant server pings.</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></span>
+          <span><strong>Safe Preferences:</strong> Your saved settings, volume level, theme choices, and custom duration presets in local browser storage are protected and intact.</span>
+        </li>
+        <li class="flex items-start gap-2.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-2 shrink-0"></span>
+          <span><strong>Offline Capable:</strong> If your venue experiences network drops during an active examination, the clock continues counting accurately without interruption.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="mt-8">
+      <p class="eyebrow mb-4">Quick Navigation</p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <a href="/" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Online Exam Clock
+            </h3>
+            <span class="text-xs font-mono text-[var(--text-muted)]">Main app →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Full-screen countdown timer with reading time, +25% extra time calc, and hall projection display.
+          </p>
+        </a>
+
+        <a href="/how-to" class="card p-5 bg-[var(--bg-elevated)] transition hover:border-[var(--text-muted)] no-underline group">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--color-link)] transition-colors">
+              Setup Guide
+            </h3>
+            <span class="text-xs font-mono text-[var(--text-muted)]">Guide →</span>
+          </div>
+          <p class="mt-2 text-xs text-[var(--text-secondary)] leading-5">
+            Step-by-step instructions for invigilators, teachers, and exam hall coordinators.
+          </p>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

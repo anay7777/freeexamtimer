@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow error pages
+Disallow: /404
+Disallow: /500
+
+# Host & Sitemap
+Host: https://freeexamtimer.com
+Sitemap: https://freeexamtimer.com/sitemap-index.xml
+Sitemap: https://freeexamtimer.com/sitemap.xml
+
