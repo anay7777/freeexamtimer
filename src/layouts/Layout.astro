@@ -141,18 +141,91 @@ const faqJsonLd = {
       rel="stylesheet"
     />
 
-    <!-- Theme flash prevention -->
+    <!-- Theme flash prevention and universal theme controller -->
     <script is:inline>
       (function () {
-        try {
-          const t = localStorage.getItem("fet-theme");
-          if (
-            t === "dark" ||
-            (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)
-          ) {
-            document.documentElement.setAttribute("data-theme", "dark");
+        function getSavedTheme() {
+          try {
+            const saved = localStorage.getItem("fet-theme");
+            if (saved === "dark" || saved === "light") return saved;
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+          } catch (e) {}
+          return "light";
+        }
+
+        const initialTheme = getSavedTheme();
+        document.documentElement.setAttribute("data-theme", initialTheme);
+
+        function syncThemeUi(theme) {
+          const dark = theme === "dark";
+          document.querySelectorAll("#icon-sun, .theme-icon-sun").forEach(function (el) {
+            el.classList.toggle("hidden", !dark);
+          });
+          document.querySelectorAll("#icon-moon, .theme-icon-moon").forEach(function (el) {
+            el.classList.toggle("hidden", dark);
+          });
+          var toggle = document.getElementById("toggle-dark");
+          if (toggle && "checked" in toggle) {
+            toggle.checked = dark;
           }
-        } catch (e) {}
+          document.querySelectorAll("[data-theme-label]").forEach(function (el) {
+            el.textContent = dark ? "Dark" : "Light";
+          });
+        }
+
+        window.__applyTheme = function (theme) {
+          document.documentElement.setAttribute("data-theme", theme);
+          try {
+            localStorage.setItem("fet-theme", theme);
+          } catch (e) {}
+          syncThemeUi(theme);
+          window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: theme } }));
+        };
+
+        window.__toggleTheme = function () {
+          const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+          const next = current === "dark" ? "light" : "dark";
+          window.__applyTheme(next);
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", function () {
+            syncThemeUi(document.documentElement.getAttribute("data-theme") || "light");
+          });
+        } else {
+          syncThemeUi(initialTheme);
+        }
+
+        // Global click handler for theme toggles
+        document.addEventListener("click", function (e) {
+          var target = e.target;
+          if (!target || !(target instanceof Element)) return;
+          var btn = target.closest("#btn-theme, [data-theme-toggle]");
+          if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.__toggleTheme();
+            return;
+          }
+
+          // Back to top handler
+          var backToTop = target.closest("#btn-back-to-top");
+          if (backToTop) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        });
+
+        // Global keyboard shortcut 'D' outside form inputs
+        window.addEventListener("keydown", function (e) {
+          if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+          var tag = (e.target && e.target.tagName) || "";
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+          if (e.code === "KeyD") {
+            e.preventDefault();
+            window.__toggleTheme();
+          }
+        });
       })();
     </script>
   </head>

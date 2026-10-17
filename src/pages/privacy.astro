@@ -1,0 +1,140 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Privacy Policy — Free Online Exam Timer | FreeExamTimer"
+  description="Our commitment to student and teacher privacy. FreeExamTimer collects zero personal data, runs client-side in your browser, uses no tracking cookies, and serves zero ads."
+  canonicalUrl="https://freeexamtimer.com/privacy"
+>
+  <Nav active="privacy" />
+  
+  <main class="mx-auto max-w-[800px] px-5 pt-24 pb-20">
+    <!-- Header -->
+    <div class="mb-10">
+      <p class="eyebrow">Privacy & Data Security</p>
+      <h1 class="mt-2 text-[36px] md:text-[44px] leading-[44px] font-semibold tracking-[-2px]">
+        Privacy Policy
+      </h1>
+      <p class="mt-4 text-base leading-relaxed text-[var(--text-secondary)]">
+        FreeExamTimer is designed with a strict privacy-first architecture. We believe that classroom clocks and exam hall displays should never track, profile, or monetize candidates or educators.
+      </p>
+      <div class="mt-4 flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)] font-mono">
+        <span class="rounded bg-[var(--border-color)] px-2 py-1">Effective: January 2026</span>
+        <span class="rounded bg-[var(--border-color)] px-2 py-1">Version 2.0</span>
+        <span class="rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 font-medium">100% Client-Side</span>
+      </div>
+    </div>
+
+    <!-- Quick Highlights Card -->
+    <div class="card p-6 mb-12 bg-[var(--bg-elevated)] border-l-4 border-l-emerald-500">
+      <h2 class="text-base font-semibold text-[var(--text-primary)]">Key Privacy Highlights</h2>
+      <ul class="mt-3 grid gap-2.5 text-sm text-[var(--text-secondary)] sm:grid-cols-2">
+        <li class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          No account registration or login required
+        </li>
+        <li class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          No tracking cookies or advertising pixels
+        </li>
+        <li class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Zero student or candidate data collected
+        </li>
+        <li class="flex items-center gap-2">
+          <svg class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Timer state stored only in your local browser
+        </li>
+      </ul>
+    </div>
+
+    <!-- Policy Sections -->
+    <article class="space-y-10 text-[var(--text-secondary)] leading-relaxed">
+      <section>
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          1. Information We Do Not Collect
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          FreeExamTimer is hosted as a static web application. We do not require you to provide your name, email address, school affiliation, student rosters, or any personally identifiable information (PII). When you type an exam title (e.g., "AP Chemistry Midterm") or configure candidate instructions, that information stays entirely in your device's memory. It is never transmitted across the network or stored on any server.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          2. Local Storage Usage
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          To provide a seamless experience where your preferences are preserved between browser refreshes, we utilize your browser's standard <code class="text-xs bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded border border-[var(--border-color)]">localStorage</code> mechanism. The items saved include:
+        </p>
+        <ul class="mt-3 space-y-2 text-sm pl-5 list-disc">
+          <li><strong class="text-[var(--text-primary)]">Theme choice (<code class="text-xs">fet-theme</code>):</strong> Saves your selected display mode (Dark or Light mode).</li>
+          <li><strong class="text-[var(--text-primary)]">Timer state & preferences (<code class="text-xs">fet-config-v1</code>):</strong> Saves duration, warning intervals (e.g. 15m, 5m), sound choices, and whether the anxiety-reduction mode (hidden seconds) is enabled.</li>
+        </ul>
+        <p class="mt-3 text-sm leading-6">
+          This data never leaves your computer and can be purged at any time by clearing your browser cache or site data.
+        </p>
+      </section>
+
+      <section id="no-tracking">
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          3. No Cookies, No Trackers, No Ads
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          We do not deploy third-party advertising networks, affiliate trackers, cross-site tracking scripts, or behavioural surveillance tools. You will never see third-party ads, pop-ups, or sponsor banners while running an examination.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          4. Educational & Classroom Compliance (FERPA, COPPA, GDPR)
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          Because FreeExamTimer does not collect, process, or transmit candidate or student records, using this service in public or private educational institutions does not create student privacy exposure under:
+        </p>
+        <ul class="mt-3 space-y-2 text-sm pl-5 list-disc">
+          <li><strong class="text-[var(--text-primary)]">FERPA:</strong> (Family Educational Rights and Privacy Act - US)</li>
+          <li><strong class="text-[var(--text-primary)]">COPPA:</strong> (Children's Online Privacy Protection Act - US)</li>
+          <li><strong class="text-[var(--text-primary)]">GDPR & UK GDPR:</strong> (General Data Protection Regulation - EU & UK)</li>
+          <li><strong class="text-[var(--text-primary)]">Australian Privacy Principles:</strong> (Privacy Act 1988)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          5. Web Audio and Browser Permissions
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          All chimes, gongs, and audio alerts are generated locally in real-time through the HTML5 <strong class="text-[var(--text-primary)]">Web Audio API</strong> using synthesizer waveforms. No audio files are downloaded from external servers, and FreeExamTimer never requests microphone, camera, or location access. When you invoke Fullscreen or Wake Lock (preventing screen dimming), standard browser APIs are utilized without logging any telemetric data.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold text-[var(--text-primary)] tracking-tight">
+          6. Updates and Inquiries
+        </h2>
+        <p class="mt-3 text-sm leading-6">
+          Should this policy change in the future (for example, if new client-side features are released), we will update the effective date at the top of this document. If you have questions regarding data security in your school or examination center, please reach out via our contact page.
+        </p>
+      </section>
+    </article>
+
+    <!-- Bottom Actions -->
+    <div class="card mt-12 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <p class="font-medium text-[var(--text-primary)]">Have questions about school deployment?</p>
+        <p class="mt-1 text-sm text-[var(--text-secondary)]">
+          Our team is happy to assist exam officers, IT directors, and proctors.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="/contact" class="btn-app">Contact team</a>
+        <a href="/" class="btn-pill">Open timer</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

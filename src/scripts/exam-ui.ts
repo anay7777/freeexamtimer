@@ -41,6 +41,10 @@ function toast(msg: string): void {
 }
 
 function applyTheme(theme: 'light' | 'dark'): void {
+  if (typeof (window as any).__applyTheme === 'function') {
+    (window as any).__applyTheme(theme);
+    return;
+  }
   document.documentElement.setAttribute('data-theme', theme);
   try {
     localStorage.setItem('fet-theme', theme);
@@ -52,6 +56,12 @@ function applyTheme(theme: 'light' | 'dark'): void {
   const moon = $('icon-moon');
   if (sun) sun.classList.toggle('hidden', !dark);
   if (moon) moon.classList.toggle('hidden', dark);
+
+  document.querySelectorAll('.theme-icon-sun').forEach((el) => el.classList.toggle('hidden', !dark));
+  document.querySelectorAll('.theme-icon-moon').forEach((el) => el.classList.toggle('hidden', dark));
+  document.querySelectorAll('[data-theme-label]').forEach((el) => {
+    el.textContent = dark ? 'Dark' : 'Light';
+  });
 
   const toggle = input('toggle-dark');
   if (toggle) toggle.checked = dark;
@@ -638,7 +648,6 @@ export function bootExamUi(): void {
   $('backdrop')?.addEventListener('click', closeSettings);
 
   // Theme Toggles
-  $('btn-theme')?.addEventListener('click', () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'));
   input('toggle-dark')?.addEventListener('change', () => applyTheme(input('toggle-dark')?.checked ? 'dark' : 'light'));
 
   // Settings Inputs
@@ -753,7 +762,6 @@ export function bootExamUi(): void {
       if ($('fullscreen-overlay')?.classList.contains('active')) exitFullscreen();
       else enterFullscreen();
     }
-    if (e.code === 'KeyD') applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
     if (e.code === 'KeyS') {
       const panel = $('settings-panel');
       if (panel?.classList.contains('open')) closeSettings();
