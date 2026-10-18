@@ -1,2 +1,5 @@
 https://freeexamtimer.pages.dev/*
   X-Robots-Tag: noindex
+
+https://:version.freeexamtimer.pages.dev/*
+  X-Robots-Tag: noindex
