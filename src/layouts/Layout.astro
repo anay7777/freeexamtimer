@@ -1,29 +1,74 @@
 ---
 import "../styles/global.css";
-import { faqItems } from "../data/faq";
+import { languages, defaultLang, ogLocales, type Lang } from "../i18n/ui";
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "../i18n/utils";
 
 interface Props {
   title?: string;
   description?: string;
   canonicalUrl?: string;
+  /** Language-neutral route (e.g. "/faq/") for pages that exist in every language; enables hreflang alternates. */
+  i18nPath?: string;
   ogImage?: string;
   includeFaq?: boolean;
 }
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+const absoluteUrl = (path: string) => new URL(path, Astro.site).href;
+
 const {
-  title = "Free Exam Timer — Free Online Exam Countdown Clock | FreeExamTimer",
-  description = "Free exam timer for teachers, invigilators & students. Set reading time, writing time, extra time (+25%), full-screen hall display, and audible chimes. Works for SAT, GRE, IELTS, JEE, NEET, GCSE, IB & more. No ads, no signup.",
-  canonicalUrl = "https://freeexamtimer.com/",
+  title = t.meta.home.title,
+  description = t.meta.home.description,
+  i18nPath,
   ogImage = "https://freeexamtimer.com/og-image.png",
   includeFaq = false,
 } = Astro.props;
 
+const canonicalUrl = i18nPath
+  ? absoluteUrl(translatePath(i18nPath))
+  : (Astro.props.canonicalUrl ?? "https://freeexamtimer.com/");
+
+const alternates = i18nPath
+  ? (Object.keys(languages) as Lang[]).map((l) => ({
+      hreflang: l,
+      href: absoluteUrl(translatePath(i18nPath, l)),
+    }))
+  : [];
+
 const siteName = "FreeExamTimer";
+const homeUrl = absoluteUrl(translatePath("/"));
+
+const webAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": `${homeUrl}#webapp`,
+  "name": "FreeExamTimer",
+  "url": homeUrl,
+  "inLanguage": lang,
+  "description": t.meta.schemaDescription,
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+  },
+  "featureList": t.meta.schemaFeatures,
+  "publisher": {
+    "@type": "Organization",
+    "name": "FreeExamTimer",
+    "url": "https://freeexamtimer.com/",
+  },
+};
 
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": faqItems.map((item) => ({
+  "inLanguage": lang,
+  "mainEntity": t.faq.items.map((item) => ({
     "@type": "Question",
     "name": item.question,
     "acceptedAnswer": {
@@ -35,7 +80,7 @@ const faqJsonLd = {
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang={lang} data-theme="light">
   <head>
     <!-- Google tag (gtag.js) -->
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-0WBY5V1Y3Y"></script>
@@ -57,14 +102,19 @@ const faqJsonLd = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="FreeExamTimer" />
-    <meta
-      name="keywords"
-      content="exam timer, free exam timer, online exam timer, exam timer clock, exam timer countdown, exam timer full screen, exam timer with extra time, exam timer with reading time, digital exam timer, competitive exam timer, math exam timer, SAT exam timer, GRE exam timer, CAT exam timer, JEE exam timer, NEET exam timer, CLAT exam timer, UPSC exam timer, ACT exam timer, GCSE exam timer, Gaokao exam timer, ENEM exam timer, IELTS exam timer, AP exam timer, IB exam timer, reading time timer, invigilator timer, hall timer, classroom exam clock, exam countdown clock"
-    />
+    <meta name="keywords" content={t.meta.keywords} />
 
     <!-- Canonical & Sitemap -->
     <link rel="canonical" href={canonicalUrl} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Language alternates (hreflang) -->
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    {i18nPath && (
+      <link rel="alternate" hreflang="x-default" href={absoluteUrl(useTranslatedPath(defaultLang)(i18nPath))} />
+    )}
 
 
     <!-- Open Graph / Facebook -->
@@ -76,21 +126,20 @@ const faqJsonLd = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="FreeExamTimer — Free Online Exam Countdown Clock"
-    />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+    <meta property="og:locale" content={ogLocales[lang]} />
+    {alternates
+      .filter((alt) => alt.hreflang !== lang)
+      .map((alt) => (
+        <meta property="og:locale:alternate" content={ogLocales[alt.hreflang]} />
+      ))}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta
-      name="twitter:image:alt"
-      content="FreeExamTimer — Free Online Exam Countdown Clock"
-    />
+    <meta name="twitter:image:alt" content={t.meta.ogImageAlt} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -101,39 +150,11 @@ const faqJsonLd = {
     <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Schema.org WebApplication -->
-    <script type="application/ld+json" is:inline>
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "@id": "https://freeexamtimer.com/#webapp",
-        "name": "FreeExamTimer",
-        "url": "https://freeexamtimer.com/",
-        "description": "Free online exam timer for teachers, invigilators and students. Features reading time, writing time, extra time (+25% access arrangements), full-screen hall display, audible chimes, and shareable exam links.",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Any",
-        "browserRequirements": "Requires a modern web browser with JavaScript enabled",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "featureList": [
-          "Exam countdown timer",
-          "Reading time phase with auto-handoff",
-          "Extra time / access arrangements (+25%)",
-          "Full-screen projector hall display",
-          "Audible chimes and warning alerts",
-          "Shareable exam configuration links",
-          "Digital exam timer with dark mode",
-          "Supports SAT, GRE, IELTS, JEE, NEET, GCSE, IB, CAT, CLAT, UPSC, ACT, Gaokao, ENEM, AP exams"
-        ],
-        "publisher": {
-          "@type": "Organization",
-          "name": "FreeExamTimer",
-          "url": "https://freeexamtimer.com/"
-        }
-      }
-    </script>
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webAppJsonLd, null, 2)}
+    />
 
     <!-- Schema.org FAQPage -->
     {includeFaq && (
@@ -180,7 +201,7 @@ const faqJsonLd = {
             toggle.checked = dark;
           }
           document.querySelectorAll("[data-theme-label]").forEach(function (el) {
-            el.textContent = dark ? "Dark" : "Light";
+            el.textContent = dark ? el.dataset.labelDark || "Dark" : el.dataset.labelLight || "Light";
           });
         }
 

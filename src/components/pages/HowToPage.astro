@@ -1,0 +1,47 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../Nav.astro';
+import Footer from '../Footer.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<Layout
+  title={t.meta.howTo.title}
+  description={t.meta.howTo.description}
+  i18nPath="/how-to/"
+  includeFaq={false}
+>
+  <Nav active="how-to" />
+  <main class="mx-auto max-w-[720px] px-5 pt-24 pb-20">
+    <p class="eyebrow">{t.howTo.eyebrow}</p>
+    <h1 class="mt-2 text-[40px] leading-[44px] font-semibold tracking-[-2px]">{t.howTo.title}</h1>
+    <p class="mt-4 text-base leading-6 text-[var(--text-secondary)]">
+      {t.howTo.intro}
+    </p>
+
+    <ol class="mt-10 flex flex-col gap-8">
+      {t.howTo.steps.map((step) => (
+        <li>
+          <p class="text-sm font-medium">{step.title}</p>
+          <p class="mt-1 text-sm leading-5 text-[var(--text-secondary)]">
+            {step.text}
+          </p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="card mt-12 p-6">
+      <p class="font-medium">{t.howTo.backupTitle}</p>
+      <p class="mt-2 text-sm leading-5 text-[var(--text-secondary)]">
+        {t.howTo.backupText}
+      </p>
+    </div>
+
+    <a href={translatePath('/')} class="btn-pill mt-10 inline-flex">{t.howTo.cta}</a>
+  </main>
+  <Footer />
+</Layout>

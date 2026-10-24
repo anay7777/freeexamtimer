@@ -1,35 +1,44 @@
 ---
 import { MAJOR_COUNTRY_TIMEZONES } from '../data/timezones';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East & Africa'] as const;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const a = t.app;
+const fmtN = (template: string, n: number) => template.replace('{n}', String(n));
+
+// Runtime strings for src/scripts/exam-ui.ts; "<" is escaped so the JSON can't close the script tag
+const clientStrings = JSON.stringify({ ...t.client, sounds: a.sounds }).replace(/</g, '\\u003c');
 ---
 
 <div id="exam-app">
   <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
   <!-- Settings Drawer -->
-  <aside class="settings-panel" id="settings-panel" aria-label="Settings panel">
+  <aside class="settings-panel" id="settings-panel" aria-label={a.settings.ariaLabel}>
     <div class="flex items-center justify-between border-b border-[var(--border-color)] px-5 py-4">
       <div class="flex items-center gap-2">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83-2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
-        <h2 class="text-base font-semibold">Exam Timer Settings</h2>
+        <h2 class="text-base font-semibold">{a.settings.title}</h2>
       </div>
-      <button class="btn-app h-8 w-8 min-h-0 min-w-0 p-0 text-xs" id="btn-close-settings" type="button" aria-label="Close settings">✕</button>
+      <button class="btn-app h-8 w-8 min-h-0 min-w-0 p-0 text-xs" id="btn-close-settings" type="button" aria-label={a.settings.close}>✕</button>
     </div>
     <div class="flex flex-col gap-6 px-5 py-5 pb-24 md:pb-6">
       <section>
-        <p class="eyebrow mb-3">Display & Clock</p>
+        <p class="eyebrow mb-3">{a.settings.displayClock}</p>
         <div class="flex flex-col gap-3">
           <div>
             <label class="mb-1.5 block text-[13px] text-[var(--text-muted)]" for="select-timezone-settings">
-              Country Standard Time
+              {a.settings.countryTime}
             </label>
             <select id="select-timezone-settings" class="field text-xs sm:text-[13px] cursor-pointer">
               {regions.map((reg) => (
-                <optgroup label={reg}>
+                <optgroup label={a.regions[reg]}>
                   {MAJOR_COUNTRY_TIMEZONES.filter((tz) => tz.region === reg).map((tz) => (
                     <option value={tz.id}>
                       {tz.flag} {tz.country} — {tz.abbr} ({tz.utcOffset})
@@ -38,122 +47,120 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
                 </optgroup>
               ))}
             </select>
-            <p class="mt-1 text-[11px] text-[var(--text-muted)]">Live clocks and scheduled starts display in this country's time.</p>
+            <p class="mt-1 text-[11px] text-[var(--text-muted)]">{a.settings.countryTimeHint}</p>
           </div>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Dark mode</span>
+            <span>{a.settings.darkMode}</span>
             <span class="toggle"><input type="checkbox" id="toggle-dark" /><span></span></span>
           </label>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Always show seconds</span>
+            <span>{a.settings.alwaysSeconds}</span>
             <span class="toggle"><input type="checkbox" id="toggle-seconds" checked /><span></span></span>
           </label>
-          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]" title="Hide seconds during the bulk of the exam and only show in final 5 minutes to reduce student anxiety">
-            <span>Hide seconds until final 5m <span class="text-xs text-[var(--text-muted)]">(calm)</span></span>
+          <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]" title={a.settings.hideSecondsTitle}>
+            <span>{a.settings.hideSeconds} <span class="text-xs text-[var(--text-muted)]">{a.settings.calm}</span></span>
             <span class="toggle"><input type="checkbox" id="toggle-anxiety-seconds" /><span></span></span>
           </label>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>12-hour clock (AM/PM)</span>
+            <span>{a.settings.hour12}</span>
             <span class="toggle"><input type="checkbox" id="toggle-hour12" /><span></span></span>
           </label>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Show +25% extra finish time</span>
+            <span>{a.settings.showExtra}</span>
             <span class="toggle"><input type="checkbox" id="toggle-extra-clock" checked /><span></span></span>
           </label>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Visual flash when finished</span>
+            <span>{a.settings.flash}</span>
             <span class="toggle"><input type="checkbox" id="toggle-flash" checked /><span></span></span>
           </label>
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Keep screen awake (No sleep)</span>
+            <span>{a.settings.wakeLock}</span>
             <span class="toggle"><input type="checkbox" id="toggle-wakelock" checked /><span></span></span>
           </label>
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[13px] text-[var(--text-muted)]">Timer size</span>
+              <span class="text-[13px] text-[var(--text-muted)]">{a.settings.timerSize}</span>
               <span class="font-mono text-xs text-[var(--text-muted)]" id="label-size">100%</span>
             </div>
-            <input type="range" id="range-size" min="70" max="150" value="100" aria-label="Timer display size" />
+            <input type="range" id="range-size" min="70" max="150" value="100" aria-label={a.settings.timerSizeAria} />
           </div>
         </div>
       </section>
 
       <section>
-        <p class="eyebrow mb-3">Sound & Chimes</p>
+        <p class="eyebrow mb-3">{a.settings.soundChimes}</p>
         <div class="flex flex-col gap-3">
           <label class="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-            <span>Silent hall (Visual alerts only)</span>
+            <span>{a.settings.silent}</span>
             <span class="toggle"><input type="checkbox" id="toggle-silent" /><span></span></span>
           </label>
           <div>
-            <label class="mb-1.5 block text-[13px] text-[var(--text-muted)]" for="select-sound">Chime sound</label>
+            <label class="mb-1.5 block text-[13px] text-[var(--text-muted)]" for="select-sound">{a.settings.chimeSound}</label>
             <select id="select-sound" class="field">
-              <option value="bell">Harmonic Exam Bell</option>
-              <option value="gong">Hall Gong (Resonant)</option>
-              <option value="chime">Gentle Chime (3-tone)</option>
-              <option value="beep">Digital Beep</option>
-              <option value="buzzer">Soft Buzzer</option>
+              {Object.entries(a.sounds).map(([value, label]) => (
+                <option value={value}>{label}</option>
+              ))}
             </select>
           </div>
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[13px] text-[var(--text-muted)]">Volume</span>
+              <span class="text-[13px] text-[var(--text-muted)]">{a.settings.volume}</span>
               <span class="font-mono text-xs text-[var(--text-muted)]" id="label-volume">70%</span>
             </div>
-            <input type="range" id="range-volume" min="0" max="100" value="70" aria-label="Volume" />
+            <input type="range" id="range-volume" min="0" max="100" value="70" aria-label={a.settings.volume} />
           </div>
           <button class="btn-app w-full text-xs" id="btn-test-sound" type="button">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             </svg>
-            Play test sound
+            {a.settings.testSound}
           </button>
         </div>
       </section>
 
       <section>
-        <p class="eyebrow mb-3">Warning Notifications</p>
-        <p class="mb-3 text-[13px] text-[var(--text-muted)]">Chime when remaining writing time reaches:</p>
+        <p class="eyebrow mb-3">{a.settings.warnings}</p>
+        <p class="mb-3 text-[13px] text-[var(--text-muted)]">{a.settings.warningsHint}</p>
         <div class="flex flex-col gap-2.5">
           <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-            <input type="checkbox" id="warn-30" /> 30 minutes remaining
+            <input type="checkbox" id="warn-30" /> {fmtN(a.settings.warnMinutes, 30)}
           </label>
           <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-            <input type="checkbox" id="warn-15" checked /> 15 minutes remaining
+            <input type="checkbox" id="warn-15" checked /> {fmtN(a.settings.warnMinutes, 15)}
           </label>
           <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-            <input type="checkbox" id="warn-10" /> 10 minutes remaining
+            <input type="checkbox" id="warn-10" /> {fmtN(a.settings.warnMinutes, 10)}
           </label>
           <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-            <input type="checkbox" id="warn-5" checked /> 5 minutes remaining
+            <input type="checkbox" id="warn-5" checked /> {fmtN(a.settings.warnMinutes, 5)}
           </label>
           <label class="flex items-center gap-2.5 text-sm text-[var(--text-secondary)]">
-            <input type="checkbox" id="warn-1" checked /> 1 minute remaining
+            <input type="checkbox" id="warn-1" checked /> {a.settings.warnOneMinute}
           </label>
         </div>
       </section>
 
       <section>
-        <p class="eyebrow mb-3">Keyboard Shortcuts</p>
+        <p class="eyebrow mb-3">{a.settings.shortcuts}</p>
         <div class="flex flex-col gap-2 text-[13px] text-[var(--text-secondary)]">
-          <div class="flex justify-between items-center"><span>Start / Pause</span><kbd>Space</kbd></div>
-          <div class="flex justify-between items-center"><span>Reset exam</span><kbd>R</kbd></div>
-          <div class="flex justify-between items-center"><span>Full screen hall display</span><kbd>F</kbd></div>
-          <div class="flex justify-between items-center"><span>Toggle dark theme</span><kbd>D</kbd></div>
-          <div class="flex justify-between items-center"><span>Open / close settings</span><kbd>S</kbd></div>
-          <div class="flex justify-between items-center"><span>Exit / Close modals</span><kbd>Esc</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scStartPause}</span><kbd>Space</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scReset}</span><kbd>R</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scFullScreen}</span><kbd>F</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scTheme}</span><kbd>D</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scSettings}</span><kbd>S</kbd></div>
+          <div class="flex justify-between items-center"><span>{a.settings.scExit}</span><kbd>Esc</kbd></div>
         </div>
       </section>
     </div>
   </aside>
 
   <!-- Fullscreen Hall Projection View -->
-  <div id="fullscreen-overlay" aria-label="Hall display projection">
+  <div id="fullscreen-overlay" aria-label={a.fullscreen.ariaLabel}>
     <div class="w-full max-w-5xl px-6 flex flex-col items-center">
       <div class="flex items-center gap-3">
-        <span id="fs-phase-chip" class="badge-ready rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">Ready</span>
-        <span id="fs-extra-badge" class="hidden rounded-full bg-[#ffefcf] px-3 py-1 text-xs font-semibold text-[#ab570a]">Extended</span>
+        <span id="fs-phase-chip" class="badge-ready rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">{a.fullscreen.ready}</span>
+        <span id="fs-extra-badge" class="hidden rounded-full bg-[#ffefcf] px-3 py-1 text-xs font-semibold text-[#ab570a]">{a.fullscreen.extended}</span>
       </div>
 
       <h2 class="mt-4 text-center text-xl md:text-2xl font-semibold tracking-tight text-[var(--text-primary)] min-h-7" id="fs-title"></h2>
@@ -179,28 +186,28 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
       <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-3xl text-center">
         <div class="card p-3 bg-[var(--bg-card)]">
           <p class="eyebrow flex items-center justify-center gap-1.5">
-            <span>Current Time</span>
+            <span>{a.fullscreen.currentTime}</span>
             <span id="fs-current-badge" class="rounded px-1.5 py-0.5 bg-[var(--border-color)] text-[10px] font-mono text-[var(--text-secondary)]">LOCAL</span>
           </p>
           <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-current">—</p>
         </div>
         <div class="card p-3 bg-[var(--bg-card)]">
           <p class="eyebrow flex items-center justify-center gap-1.5">
-            <span>Start Time</span>
+            <span>{a.fullscreen.startTime}</span>
             <span id="fs-start-badge" class="rounded px-1.5 py-0.5 bg-[var(--border-color)] text-[10px] font-mono text-[var(--text-secondary)]">LOCAL</span>
           </p>
           <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-start">—</p>
         </div>
         <div class="card p-3 bg-[var(--bg-card)]">
           <p class="eyebrow flex items-center justify-center gap-1.5">
-            <span>Finish Time</span>
+            <span>{a.fullscreen.finishTime}</span>
             <span id="fs-finish-badge" class="rounded px-1.5 py-0.5 bg-[var(--border-color)] text-[10px] font-mono text-[var(--text-secondary)]">LOCAL</span>
           </p>
           <p class="mt-1 font-mono text-base md:text-xl font-medium" id="fs-finish">—</p>
         </div>
         <div class="card p-3 bg-[var(--bg-card)]" id="fs-box-extra-finish">
           <p class="eyebrow flex items-center justify-center gap-1.5 text-[#ab570a] dark:text-[#f7b750]">
-            <span>+25% Extra Finish</span>
+            <span>{a.fullscreen.extraFinish}</span>
             <span id="fs-extra-finish-badge" class="rounded px-1.5 py-0.5 bg-[#ffefcf] dark:bg-[#38260b] text-[10px] font-mono text-[#ab570a] dark:text-[#f7b750]">LOCAL</span>
           </p>
           <p class="mt-1 font-mono text-base md:text-xl font-medium text-[#ab570a] dark:text-[#f7b750]" id="fs-extra-finish">—</p>
@@ -211,11 +218,11 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
       <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
         <div class="flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-3 py-1 text-xs text-[var(--text-secondary)] font-mono shadow-xs">
           <span id="fs-tz-flag">🌐</span>
-          <span id="fs-tz-label">Local Time</span>
+          <span id="fs-tz-label">{a.fullscreen.localTime}</span>
         </div>
-        <select id="fs-select-timezone" class="h-7 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 text-xs text-[var(--text-secondary)] font-medium outline-none cursor-pointer max-w-[220px] truncate" title="Switch Country Standard Time in Projector Mode">
+        <select id="fs-select-timezone" class="h-7 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 text-xs text-[var(--text-secondary)] font-medium outline-none cursor-pointer max-w-[220px] truncate" title={a.fullscreen.switchTzTitle}>
           {regions.map((reg) => (
-            <optgroup label={reg}>
+            <optgroup label={a.regions[reg]}>
               {MAJOR_COUNTRY_TIMEZONES.filter((tz) => tz.region === reg).map((tz) => (
                 <option value={tz.id}>
                   {tz.flag} {tz.country} ({tz.abbr})
@@ -235,15 +242,15 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
 
       <!-- Floating Controls on Hover -->
       <div id="fs-controls-wrap" class="mt-10 flex flex-wrap justify-center gap-2.5">
-        <button class="btn-app btn-app-primary px-5" id="fs-btn-start" type="button">Start exam</button>
-        <button class="btn-app px-4 hidden" id="fs-btn-pause" type="button">Pause</button>
-        <button class="btn-app px-4 hidden" id="fs-btn-add-5" type="button">+5 min extra</button>
-        <button class="btn-app px-4" id="fs-btn-reset" type="button">Reset</button>
-        <button class="btn-app px-4" id="fs-btn-exit" type="button" aria-label="Exit full screen">
+        <button class="btn-app btn-app-primary px-5" id="fs-btn-start" type="button">{a.controls.startExam}</button>
+        <button class="btn-app px-4 hidden" id="fs-btn-pause" type="button">{a.controls.pause}</button>
+        <button class="btn-app px-4 hidden" id="fs-btn-add-5" type="button">{a.controls.add5}</button>
+        <button class="btn-app px-4" id="fs-btn-reset" type="button">{a.controls.reset}</button>
+        <button class="btn-app px-4" id="fs-btn-exit" type="button" aria-label={a.fullscreen.exitAria}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
           </svg>
-          Exit (Esc)
+          {a.fullscreen.exit}
         </button>
       </div>
     </div>
@@ -257,13 +264,13 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
       <div class="text-center md:text-left">
         <div class="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-elevated)] px-3 py-1 text-xs font-mono text-[var(--text-muted)]">
           <span class="inline-block h-2 w-2 rounded-full bg-[#50e3c2]"></span>
-          Official Exam Countdown Clock
+          {a.hero.badge}
         </div>
         <h1 class="mt-3 text-[32px] leading-[36px] font-semibold tracking-[-1.5px] sm:text-4xl md:text-5xl md:leading-tight">
-          Exam Countdown & Hall Display
+          {a.hero.title}
         </h1>
         <p class="mt-2.5 max-w-2xl text-sm md:text-base leading-6 text-[var(--text-secondary)]">
-          Dedicated exam timer for teachers and invigilators. Reading time handoff, +25% access arrangement clocks, and full-screen projector mode.
+          {a.hero.intro}
         </p>
       </div>
 
@@ -271,17 +278,17 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
       <section id="display-card" class="card mt-6 p-5 md:p-8 text-center shadow-xs">
         <div class="flex flex-wrap items-center justify-center gap-2">
           <span id="phase-chip" class="badge-ready rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider">
-            Ready to start
+            {a.display.readyToStart}
           </span>
           <span id="extra-badge" class="hidden rounded-full bg-[#ffefcf] px-3 py-1 text-xs font-semibold text-[#ab570a]">
-            Extended
+            {a.fullscreen.extended}
           </span>
         </div>
 
         <p id="display-title" class="mt-3 min-h-5 text-base md:text-lg font-semibold text-[var(--text-primary)]"></p>
         <p id="display-centre" class="text-xs text-[var(--text-muted)] min-h-4"></p>
         <p id="phase-directive" class="mt-1 text-xs md:text-sm font-medium text-[var(--color-link)] min-h-5">
-          Verify duration and press Start exam
+          {a.display.directive}
         </p>
 
         <!-- Giant Timer Readout -->
@@ -301,28 +308,28 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
         <div class="mt-7 grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:gap-3 text-center">
           <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
             <p class="eyebrow flex items-center justify-center gap-1">
-              <span>Current</span>
+              <span>{a.display.current}</span>
               <span id="clock-current-badge" class="rounded px-1.5 py-0.2 bg-[var(--border-color)] text-[10px] font-mono font-medium text-[var(--text-secondary)]">LOCAL</span>
             </p>
             <p id="clock-current" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
           </div>
           <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
             <p class="eyebrow flex items-center justify-center gap-1">
-              <span>Start</span>
+              <span>{a.display.start}</span>
               <span id="clock-start-badge" class="rounded px-1.5 py-0.2 bg-[var(--border-color)] text-[10px] font-mono font-medium text-[var(--text-secondary)]">LOCAL</span>
             </p>
             <p id="clock-start" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
           </div>
           <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5">
             <p class="eyebrow flex items-center justify-center gap-1">
-              <span>Finish</span>
+              <span>{a.display.finish}</span>
               <span id="clock-finish-badge" class="rounded px-1.5 py-0.2 bg-[var(--border-color)] text-[10px] font-mono font-medium text-[var(--text-secondary)]">LOCAL</span>
             </p>
             <p id="clock-finish" class="mt-1 font-mono text-sm md:text-base font-medium">—</p>
           </div>
           <div class="rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-2.5" id="box-extra-finish">
             <p class="eyebrow flex items-center justify-center gap-1 text-[#ab570a] dark:text-[#f7b750]">
-              <span>+25% Finish</span>
+              <span>{a.display.extraFinish}</span>
               <span id="clock-extra-finish-badge" class="rounded px-1.5 py-0.2 bg-[#ffefcf] dark:bg-[#38260b] text-[10px] font-mono font-medium text-[#ab570a] dark:text-[#f7b750]">LOCAL</span>
             </p>
             <p id="clock-extra-finish" class="mt-1 font-mono text-sm md:text-base font-medium text-[#ab570a] dark:text-[#f7b750]">—</p>
@@ -334,15 +341,15 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <div class="flex items-center gap-2">
             <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--border-color)] text-xs" id="display-tz-flag">🌐</span>
             <div>
-              <span class="font-medium text-[var(--text-secondary)]">Country Standard Timer:</span>
-              <span id="display-tz-label" class="ml-1 font-semibold text-[var(--text-primary)]">Local (Device Time)</span>
+              <span class="font-medium text-[var(--text-secondary)]">{a.display.countryTimer}</span>
+              <span id="display-tz-label" class="ml-1 font-semibold text-[var(--text-primary)]">{a.display.localDevice}</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <label for="select-timezone-clock" class="sr-only">Choose Country Standard Time</label>
-            <select id="select-timezone-clock" class="h-8 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--color-link)] cursor-pointer max-w-[260px] sm:max-w-[320px] truncate" title="Select country standard time to view ongoing exam clocks">
+            <label for="select-timezone-clock" class="sr-only">{a.display.chooseTz}</label>
+            <select id="select-timezone-clock" class="h-8 rounded-md border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--color-link)] cursor-pointer max-w-[260px] sm:max-w-[320px] truncate" title={a.display.selectTzTitle}>
               {regions.map((reg) => (
-                <optgroup label={reg}>
+                <optgroup label={a.regions[reg]}>
                   {MAJOR_COUNTRY_TIMEZONES.filter((tz) => tz.region === reg).map((tz) => (
                     <option value={tz.id}>
                       {tz.flag} {tz.country} — {tz.abbr} ({tz.utcOffset})
@@ -359,7 +366,7 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <div class="flex items-start gap-2">
             <span class="mt-0.5 text-base">📌</span>
             <div>
-              <p class="font-semibold text-[var(--text-primary)]">Exam Hall Notice:</p>
+              <p class="font-semibold text-[var(--text-primary)]">{a.display.hallNotice}</p>
               <p id="instructions-live" class="mt-0.5 whitespace-pre-line"></p>
             </div>
           </div>
@@ -371,24 +378,24 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
         class="card mt-4 hidden p-3 md:flex md:flex-wrap md:items-center md:justify-center md:gap-2.5"
         id="desktop-controls"
       >
-        <button class="btn-pill min-w-[140px]" id="btn-start" type="button">Start exam</button>
-        <button class="btn-app hidden" id="btn-pause" type="button">Pause</button>
-        <button class="btn-app" id="btn-reset" type="button">Reset</button>
-        <button class="btn-app hidden" id="btn-add-5" type="button" title="Add 5 minutes writing time">+5 min extra</button>
-        <button class="btn-app hidden" id="btn-add-15" type="button" title="Add 15 minutes writing time">+15 min</button>
-        <button class="btn-app hidden" id="btn-add-25pct" type="button" title="Add standard 25% access arrangement extra time">+25% Extra</button>
-        <button class="btn-app" id="btn-hall-fullscreen" type="button" title="Project to full screen (F)">
+        <button class="btn-pill min-w-[140px]" id="btn-start" type="button">{a.controls.startExam}</button>
+        <button class="btn-app hidden" id="btn-pause" type="button">{a.controls.pause}</button>
+        <button class="btn-app" id="btn-reset" type="button">{a.controls.reset}</button>
+        <button class="btn-app hidden" id="btn-add-5" type="button" title={a.controls.add5Title}>{a.controls.add5}</button>
+        <button class="btn-app hidden" id="btn-add-15" type="button" title={a.controls.add15Title}>{a.controls.add15}</button>
+        <button class="btn-app hidden" id="btn-add-25pct" type="button" title={a.controls.add25Title}>{a.controls.add25}</button>
+        <button class="btn-app" id="btn-hall-fullscreen" type="button" title={a.controls.fullScreenTitle}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
           </svg>
-          Full screen
+          {a.controls.fullScreen}
         </button>
-        <button class="btn-app" id="btn-share" type="button" title="Copy shareable link with current exam configuration">
+        <button class="btn-app" id="btn-share" type="button" title={a.controls.shareTitle}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
           </svg>
-          Share link
+          {a.controls.share}
         </button>
       </div>
 
@@ -396,12 +403,12 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
       <section class="card mt-4 p-5 md:p-6" id="setup-card">
         <div class="mb-4 flex items-center justify-between border-b border-[var(--border-color)] pb-3">
           <div class="flex items-center gap-2">
-            <p class="eyebrow">Exam Configuration</p>
-            <span class="text-xs text-[var(--text-muted)]">(editable while idle)</span>
+            <p class="eyebrow">{a.setup.heading}</p>
+            <span class="text-xs text-[var(--text-muted)]">{a.setup.editable}</span>
           </div>
           <div class="flex items-center gap-2">
-            <button class="btn-app h-7 min-h-0 px-2.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]" id="btn-clear-setup" type="button" title="Clear all configuration inputs in panel">Clear</button>
-            <button class="btn-app h-7 min-h-0 px-2.5 text-xs" id="btn-toggle-setup" type="button">Hide</button>
+            <button class="btn-app h-7 min-h-0 px-2.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]" id="btn-clear-setup" type="button" title={a.setup.clearTitle}>{a.setup.clear}</button>
+            <button class="btn-app h-7 min-h-0 px-2.5 text-xs" id="btn-toggle-setup" type="button">{a.setup.hide}</button>
           </div>
         </div>
 
@@ -410,52 +417,45 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-title">
-                Exam Title & Subject
+                {a.setup.titleLabel}
               </label>
-              <input class="field" id="input-title" type="text" maxlength="80" placeholder="e.g. Mathematics Paper 1 (Higher Tier)" />
+              <input class="field" id="input-title" type="text" maxlength="80" placeholder={a.setup.titlePlaceholder} />
             </div>
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-centre">
-                Centre / Room Number <span class="font-normal text-[var(--text-muted)]">(optional)</span>
+                {a.setup.centreLabel} <span class="font-normal text-[var(--text-muted)]">{a.setup.optional}</span>
               </label>
-              <input class="field" id="input-centre" type="text" maxlength="80" placeholder="e.g. Centre 54321 · Sports Hall Desk A" />
+              <input class="field" id="input-centre" type="text" maxlength="80" placeholder={a.setup.centrePlaceholder} />
             </div>
           </div>
 
           <!-- Exam Length (Writing Time) & Presets -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <label class="text-[13px] font-medium text-[var(--text-secondary)]">Writing Duration (Hours : Minutes : Seconds)</label>
-              <span class="text-xs text-[var(--text-muted)]">Exclusive of reading time</span>
+              <label class="text-[13px] font-medium text-[var(--text-secondary)]">{a.setup.durationLabel}</label>
+              <span class="text-xs text-[var(--text-muted)]">{a.setup.durationHint}</span>
             </div>
             <div class="grid grid-cols-3 gap-2">
               <div>
-                <span class="text-xs text-[var(--text-muted)]">Hours</span>
+                <span class="text-xs text-[var(--text-muted)]">{a.setup.hours}</span>
                 <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-hours" type="number" min="0" max="12" value="1" />
               </div>
               <div>
-                <span class="text-xs text-[var(--text-muted)]">Minutes</span>
+                <span class="text-xs text-[var(--text-muted)]">{a.setup.minutes}</span>
                 <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-minutes" type="number" min="0" max="59" value="0" />
               </div>
               <div>
-                <span class="text-xs text-[var(--text-muted)]">Seconds</span>
+                <span class="text-xs text-[var(--text-muted)]">{a.setup.seconds}</span>
                 <input class="field mt-1 text-center font-mono text-base font-semibold" id="input-seconds" type="number" min="0" max="59" value="0" />
               </div>
             </div>
 
             <!-- Fast Duration Presets -->
             <div class="mt-2.5 flex flex-wrap gap-1.5 items-center">
-              <span class="text-xs text-[var(--text-muted)] mr-1">Quick presets:</span>
-              <button class="btn-preset" type="button" data-preset="15">15 min</button>
-              <button class="btn-preset" type="button" data-preset="30">30 min</button>
-              <button class="btn-preset" type="button" data-preset="45">45 min</button>
-              <button class="btn-preset" type="button" data-preset="60">1 hr</button>
-              <button class="btn-preset" type="button" data-preset="75">1h 15m</button>
-              <button class="btn-preset" type="button" data-preset="90">1.5 hr</button>
-              <button class="btn-preset" type="button" data-preset="105">1h 45m</button>
-              <button class="btn-preset" type="button" data-preset="120">2 hr</button>
-              <button class="btn-preset" type="button" data-preset="150">2.5 hr</button>
-              <button class="btn-preset" type="button" data-preset="180">3 hr</button>
+              <span class="text-xs text-[var(--text-muted)] mr-1">{a.setup.presets}</span>
+              {Object.entries(a.setup.presetLabels).map(([mins, label]) => (
+                <button class="btn-preset" type="button" data-preset={mins}>{label}</button>
+              ))}
             </div>
           </div>
 
@@ -463,30 +463,30 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-reading">
-                Reading Time (Minutes)
+                {a.setup.readingLabel}
               </label>
               <input class="field font-mono" id="input-reading" type="number" min="0" max="60" value="0" />
               <div class="mt-2 flex flex-wrap gap-1.5">
-                <button class="btn-preset" type="button" data-reading="0">None</button>
-                <button class="btn-preset" type="button" data-reading="5">5 min</button>
-                <button class="btn-preset" type="button" data-reading="10">10 min</button>
-                <button class="btn-preset" type="button" data-reading="15">15 min</button>
+                <button class="btn-preset" type="button" data-reading="0">{a.setup.none}</button>
+                <button class="btn-preset" type="button" data-reading="5">{fmtN(a.setup.minLabel, 5)}</button>
+                <button class="btn-preset" type="button" data-reading="10">{fmtN(a.setup.minLabel, 10)}</button>
+                <button class="btn-preset" type="button" data-reading="15">{fmtN(a.setup.minLabel, 15)}</button>
               </div>
-              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Hands off automatically into writing time when finished.</p>
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">{a.setup.readingHint}</p>
             </div>
 
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-extra">
-                Extra Time / Access Arrangements (Minutes)
+                {a.setup.extraLabel}
               </label>
               <input class="field font-mono" id="input-extra" type="number" min="0" max="180" value="0" />
               <div class="mt-2 flex flex-wrap gap-1.5 items-center">
-                <button class="btn-preset" type="button" data-extra="0">None</button>
+                <button class="btn-preset" type="button" data-extra="0">{a.setup.none}</button>
                 <button class="btn-preset" type="button" data-extra="5">+5m</button>
                 <button class="btn-preset" type="button" data-extra="15">+15m</button>
-                <button class="btn-preset font-sans" type="button" id="btn-calc-25pct" title="Calculate exactly 25% extra writing time">+25% Calc</button>
+                <button class="btn-preset font-sans" type="button" id="btn-calc-25pct" title={a.setup.calc25Title}>{a.setup.calc25}</button>
               </div>
-              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Calculates official extended finish clock on the display.</p>
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">{a.setup.extraHint}</p>
             </div>
           </div>
 
@@ -494,23 +494,23 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-autostart">
-                Automatic Scheduled Start <span class="font-normal text-[var(--text-muted)]">(optional)</span>
+                {a.setup.autostartLabel} <span class="font-normal text-[var(--text-muted)]">{a.setup.optional}</span>
               </label>
               <input class="field font-mono" id="input-autostart" type="time" />
-              <p class="mt-1 text-[11px] text-[var(--text-muted)]">Starts automatically when wall clock hits this exact time.</p>
+              <p class="mt-1 text-[11px] text-[var(--text-muted)]">{a.setup.autostartHint}</p>
 
               <!-- Country Standard Time selection under Scheduled Start -->
               <div class="mt-3 rounded-lg border border-[var(--border-color)] bg-[var(--bg-elevated)] p-3">
                 <div class="flex items-center justify-between mb-1.5">
                   <label class="text-[12px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5" for="select-timezone-autostart">
                     <span>🌍</span>
-                    <span>Scheduled Start Country Time:</span>
+                    <span>{a.setup.autostartTzLabel}</span>
                   </label>
                   <span id="autostart-tz-preview" class="font-mono text-[11px] font-medium text-[var(--color-link)] truncate"></span>
                 </div>
                 <select class="field font-sans text-xs" id="select-timezone-autostart">
                   {regions.map((reg) => (
-                    <optgroup label={reg}>
+                    <optgroup label={a.regions[reg]}>
                       {MAJOR_COUNTRY_TIMEZONES.filter((tz) => tz.region === reg).map((tz) => (
                         <option value={tz.id}>
                           {tz.flag} {tz.country} — {tz.abbr} ({tz.utcOffset})
@@ -520,28 +520,26 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
                   ))}
                 </select>
                 <p class="mt-1.5 text-[11px] leading-4 text-[var(--text-muted)]">
-                  The countdown begins automatically when the clock in this selected country reaches your scheduled start time.
+                  {a.setup.autostartTzHint}
                 </p>
               </div>
             </div>
 
             <div>
               <label class="mb-1.5 block text-[13px] font-medium text-[var(--text-secondary)]" for="input-instructions">
-                Invigilator Notice / Rules for Screen
+                {a.setup.noticeLabel}
               </label>
-              <textarea class="field min-h-[76px] resize-y" id="input-instructions" maxlength="400" placeholder="e.g. Silence at all times. Black ballpoint pen only. No mobile phones or smartwatches."></textarea>
+              <textarea class="field min-h-[76px] resize-y" id="input-instructions" maxlength="400" placeholder={a.setup.noticePlaceholder}></textarea>
             </div>
           </div>
 
           <!-- Quick rules insertion chips -->
           <div>
-            <span class="text-xs text-[var(--text-muted)] block mb-1.5">Add common exam rules to instructions:</span>
+            <span class="text-xs text-[var(--text-muted)] block mb-1.5">{a.setup.rulesHint}</span>
             <div class="flex flex-wrap gap-1.5">
-              <button class="chip-rule" type="button" data-add-rule="Silence at all times in the examination room.">+ Silence at all times</button>
-              <button class="chip-rule" type="button" data-add-rule="All mobile phones and smartwatches must be switched off and placed in bags.">+ No phones / smartwatches</button>
-              <button class="chip-rule" type="button" data-add-rule="Black ink or ballpoint pen only. Do not use correcting fluid.">+ Black pen only</button>
-              <button class="chip-rule" type="button" data-add-rule="Check that you have the correct examination paper.">+ Check paper details</button>
-              <button class="chip-rule" type="button" data-add-rule="Raise your hand if you require extra paper or assistance.">+ Raise hand for help</button>
+              {a.setup.rules.map((rule) => (
+                <button class="chip-rule" type="button" data-add-rule={rule.text}>{rule.label}</button>
+              ))}
             </div>
           </div>
         </div>
@@ -549,177 +547,72 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
 
       <!-- Why this is the best exam timer -->
       <section class="mt-14">
-        <p class="eyebrow mb-2 text-center">Built specifically for real exam halls</p>
+        <p class="eyebrow mb-2 text-center">{a.features.eyebrow}</p>
         <h2 class="text-center text-[28px] md:text-[32px] leading-tight font-semibold tracking-tight">
-          Everything an invigilator needs — and nothing they don't
+          {a.features.title}
         </h2>
         <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">📘</span>
-              <h3 class="text-base font-semibold">Reading then writing</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              Optional reading time counts down first with clear instructions, then automatically hands over into writing time with an audible tone.
-            </p>
-          </article>
-
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">⏱️</span>
-              <h3 class="text-base font-semibold">Dual finish clocks</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              Calculates both standard finish time and +25% access arrangement finish time side-by-side. No mental math on the whiteboard.
-            </p>
-          </article>
-
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">📺</span>
-              <h3 class="text-base font-semibold">Projector hall mode</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              One-click full screen with giant tabular numerals readable from 30+ meters away at the back of the gym or assembly hall.
-            </p>
-          </article>
-
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🛡️</span>
-              <h3 class="text-base font-semibold">Drift-free & crash-proof</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              Uses system timestamp deltas, not fragile tick intervals. Accidental browser refresh or tab close restores the running exam instantly.
-            </p>
-          </article>
-
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🔔</span>
-              <h3 class="text-base font-semibold">Synthesized chimes</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              Synthesized via Web Audio API without external audio files. 15m, 10m, 5m, and 1m warnings, or silent hall visual flash.
-            </p>
-          </article>
-
-          <article class="card p-5">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">🔗</span>
-              <h3 class="text-base font-semibold">Shareable exam links</h3>
-            </div>
-            <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
-              Encode paper name, length, reading time, and notices directly into a shareable URL to sync multiple examination rooms.
-            </p>
-          </article>
+          {a.features.items.map((item) => (
+            <article class="card p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-elevated)] border border-[var(--border-color)]">{item.icon}</span>
+                <h3 class="text-base font-semibold">{item.title}</h3>
+              </div>
+              <p class="text-xs md:text-sm leading-5 text-[var(--text-secondary)]">
+                {item.text}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 
       <!-- ═══════════════════════════════════════════════
            SEO CONTENT ARTICLE — 800-1200 words
       ════════════════════════════════════════════════ -->
-      <article class="mt-16 prose-section" id="about-exam-timer" aria-label="About FreeExamTimer">
+      <article class="mt-16 prose-section" id="about-exam-timer" aria-label={a.seo.ariaLabel}>
 
         <header class="text-center mb-10">
-          <p class="eyebrow mb-2">Complete Guide</p>
+          <p class="eyebrow mb-2">{a.seo.eyebrow}</p>
           <h2 class="text-[28px] md:text-[34px] leading-tight font-semibold tracking-tight">
-            The Best Free Exam Timer for Every Examination
+            {a.seo.title}
           </h2>
-          <p class="mt-3 max-w-2xl mx-auto text-sm md:text-base leading-6 text-[var(--text-secondary)]">
-            A free, no-signup, no-ads <strong>online exam timer</strong> trusted by teachers, invigilators, and students worldwide — from school classrooms to competitive exam halls.
-          </p>
+          <p class="mt-3 max-w-2xl mx-auto text-sm md:text-base leading-6 text-[var(--text-secondary)]" set:html={a.seo.intro} />
         </header>
 
         <div class="seo-grid">
 
           <section class="seo-block">
-            <h3>What Is FreeExamTimer?</h3>
-            <p>
-              FreeExamTimer is a professional-grade <strong>exam timer</strong> designed for real examination conditions. Unlike generic stopwatches or kitchen countdown clocks, every feature has been built around the specific workflow of invigilating a timed paper — from setting reading time through to the final bell. It is completely free: no account required, no advertisements, no paywalled features.
-            </p>
-            <p>
-              Whether you need a <strong>digital exam timer</strong> for a single student at home, a <strong>full-screen exam timer</strong> projected onto the wall of a sports hall holding 300 candidates, or a configurable <strong>exam timer countdown</strong> shared between multiple invigilation rooms via a URL, FreeExamTimer handles all three scenarios without breaking a sweat.
-            </p>
+            <h3>{a.seo.what.title}</h3>
+            {a.seo.what.paragraphs.map((html) => <p set:html={html} />)}
           </section>
 
           <section class="seo-block">
-            <h3>Core Features of This Free Exam Timer</h3>
+            <h3>{a.seo.core.title}</h3>
             <ul>
-              <li>
-                <strong>Exam timer with reading time</strong> — Set a separate reading-time phase (5, 10, or 15 minutes are common). The timer counts it down with a clear "Reading Time" label, then automatically hands over into writing time with an audible chime. No manual switching needed.
-              </li>
-              <li>
-                <strong>Exam timer with extra time</strong> — Enter any number of extra minutes or click the <em>+25% Calc</em> button to apply the standard access-arrangement allowance automatically. Both the standard finish time and the extended (+25%) finish time are displayed side-by-side on screen — eliminating whiteboard maths mistakes.
-              </li>
-              <li>
-                <strong>Exam timer full screen</strong> — Press <kbd>F</kbd> or the Full Screen button to enter projector hall mode. The <strong>exam timer clock</strong> scales to giant tabular numerals readable from 30+ metres, accompanied by live current time, start time, finish time, and extended finish time — everything a candidate needs to see at a glance.
-              </li>
-              <li>
-                <strong>Exam timer countdown</strong> — Accurate to the second, driven by system-timestamp deltas rather than fragile tick intervals. The timer does not drift, even if the browser tab is throttled or the device enters power-saving mode.
-              </li>
-              <li>
-                <strong>Math exam timer presets</strong> — Quick-select durations: 15 min, 30 min, 45 min, 1 hr, 1 h 15 m, 1.5 hr, 1 h 45 m, 2 hr, 2.5 hr, and 3 hr. Perfect for a <strong>math exam timer</strong> or any paper with a standard duration.
-              </li>
-              <li>
-                <strong>Audible chimes</strong> — Five synthesized sounds (Harmonic Bell, Hall Gong, Gentle Chime, Digital Beep, Soft Buzzer) with configurable warning thresholds at 30 m, 15 m, 10 m, 5 m, and 1 m remaining. Silent hall mode shows a visual flash only.
-              </li>
-              <li>
-                <strong>Country standard timers & international timezones</strong> — Select any major country's official time zone directly under Scheduled Start or under the live Current Time view. Clocks (Current, Start, Finish, and Extended +25%) dynamically adapt to the selected country standard time, enabling international examinations (IB, AP, SAT, Cambridge, JEE, IELTS) and remote proctoring across continents.
-              </li>
-              <li>
-                <strong>Shareable exam links</strong> — Encode the exam title, duration, reading time, country standard timezone, and invigilator notice into a URL that opens the timer pre-configured in any other room.
-              </li>
+              {a.seo.core.items.map((html) => <li set:html={html} />)}
             </ul>
           </section>
 
           <section class="seo-block">
-            <h3>Online Exam Timer for Competitive Exams</h3>
-            <p>
-              FreeExamTimer is purpose-built for <strong>competitive exam timer</strong> use — where seconds count and accuracy is non-negotiable. Here is how it maps to the world's most popular high-stakes examinations:
-            </p>
+            <h3>{a.seo.competitive.title}</h3>
+            <p set:html={a.seo.competitive.intro} />
             <ul>
-              <li><strong>SAT exam timer</strong> — Simulate the College Board's module-based timing: 64 minutes for Reading &amp; Writing Module 1, 35 minutes for Math, etc.</li>
-              <li><strong>GRE exam timer</strong> — Set precise section durations: 41 minutes per Verbal Reasoning section, 47 minutes per Quantitative Reasoning section.</li>
-              <li><strong>ACT exam timer</strong> — English (45 min), Mathematics (60 min), Reading (35 min), Science (35 min) — use presets or type exact times.</li>
-              <li><strong>IELTS exam timer</strong> — Academic Writing Task 1 (20 min) and Task 2 (40 min), or General Training Writing; Reading (60 min). Reading time can also be included for Listening.</li>
-              <li><strong>AP exam timer</strong> — AP exams vary by subject; configure hours and minutes precisely for each free-response or multiple-choice section.</li>
-              <li><strong>IB exam timer</strong> — Use the reading time feature for IB's compulsory 5-minute reading period before Paper 1 or Paper 2 sections.</li>
-              <li><strong>GCSE exam timer</strong> — Supports durations from 45 minutes (short component) to 2 hours 30 minutes (extended papers), with full extra-time support for SEND candidates.</li>
-              <li><strong>JEE exam timer</strong> — JEE Main and JEE Advanced papers run 3 hours; use the competitive exam timer to simulate full-length practice sessions.</li>
-              <li><strong>NEET exam timer</strong> — Practice 3 hour 20 minute NEET-UG papers with automatic chimes at the 30- and 15-minute marks.</li>
-              <li><strong>CAT exam timer</strong> — CAT runs 40 minutes per section (VARC, DILR, QA); set up each section individually.</li>
-              <li><strong>CLAT exam timer</strong> — Simulate the 2-hour CLAT paper with reading-time and instruction overlays for invigilated practice tests.</li>
-              <li><strong>UPSC exam timer</strong> — Prelims papers are 2 hours each; UPSC Mains answer-writing practice benefits from the shareable link feature to sync multiple study rooms.</li>
-              <li><strong>Gaokao exam timer</strong> — Chinese college entrance exam sections run 150 minutes (Language &amp; Literature) down to 40 minutes (optional subjects).</li>
-              <li><strong>ENEM exam timer</strong> — Brazil's ENEM runs 5.5 hours on Day 1 (Languages + Essay) and 5 hours on Day 2 (STEM). Use multiple timers across study days.</li>
+              {a.seo.competitive.items.map((html) => <li set:html={html} />)}
             </ul>
           </section>
 
           <section class="seo-block">
-            <h3>Why Choose a Dedicated Exam Timer Clock?</h3>
-            <p>
-              General-purpose timers lack the features that matter in an examination context. A dedicated <strong>exam timer clock</strong> like FreeExamTimer provides:
-            </p>
+            <h3>{a.seo.why.title}</h3>
+            <p set:html={a.seo.why.intro} />
             <ul>
-              <li><strong>Phase separation</strong> — Reading time and writing time are distinct phases, not a single undifferentiated countdown.</li>
-              <li><strong>Access arrangements compliance</strong> — The +25% extra-time calculator is built to the standard used by awarding bodies worldwide (e.g. UK JCQ, College Board, Cambridge Assessment).</li>
-              <li><strong>Hall-display readability</strong> — Tabular mono numerals prevent digit-width jitter that distracts candidates; colours shift during the final five minutes to signal urgency.</li>
-              <li><strong>Crash resilience</strong> — State is persisted to localStorage every second. Accidental page refresh or power blip restores the live exam automatically.</li>
-              <li><strong>Screen wake lock</strong> — Optionally prevents the device from sleeping, essential for unattended projectors during long examinations.</li>
+              {a.seo.why.items.map((html) => <li set:html={html} />)}
             </ul>
           </section>
 
           <section class="seo-block">
-            <h3>How to Use This Free Online Exam Timer</h3>
+            <h3>{a.seo.howTo.title}</h3>
             <ol>
-              <li><strong>Set the exam title and subject</strong> — Type the paper name (e.g. "Mathematics Paper 1 — Higher Tier") so it appears on the hall display.</li>
-              <li><strong>Enter the writing duration</strong> — Choose hours, minutes, and seconds, or click a quick-preset button.</li>
-              <li><strong>Add reading time</strong> (if required) — Select 5, 10, or 15 minutes; the timer handles the handoff automatically.</li>
-              <li><strong>Configure extra time</strong> — Type the minutes or press <em>+25% Calc</em> for access arrangements.</li>
-              <li><strong>Enter a scheduled start time & country standard time</strong> (optional) — Pick any major country's standard time (e.g. India IST, US Eastern, UK GMT/BST, Japan JST, Europe CET) under Scheduled Start or Current Time. The exam starts automatically when that country's clock reaches the specified time, and candidates or remote invigilators worldwide can monitor the ongoing clocks in their own country time.</li>
-              <li><strong>Go full screen</strong> — Press <kbd>F</kbd> or the Full Screen button before candidates enter the room.</li>
-              <li><strong>Press Start exam</strong> — Or wait for the auto-start trigger. The timer begins, chimes sound at configured warning thresholds, and a "PENS DOWN" modal fires when time expires.</li>
+              {a.seo.howTo.steps.map((html) => <li set:html={html} />)}
             </ol>
           </section>
 
@@ -733,19 +626,19 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
   <nav
     class="fixed right-0 bottom-0 left-0 z-[90] border-t border-[var(--border-color)] bg-[var(--bg-primary)] px-3 pt-2 pb-[max(10px,env(safe-area-inset-bottom))] md:hidden"
     id="mobile-nav"
-    aria-label="Mobile exam controls"
+    aria-label={a.controls.mobileAria}
   >
     <div class="flex items-center gap-2">
-      <button class="btn-app btn-app-primary flex-1 font-semibold" id="mob-start" type="button">Start exam</button>
-      <button class="btn-app hidden flex-1 font-semibold" id="mob-pause" type="button">Pause</button>
-      <button class="btn-app px-3" id="mob-reset" type="button">Reset</button>
-      <button class="btn-app hidden px-3" id="mob-add" type="button" title="Add 5 min">+5</button>
-      <button class="btn-app px-3" id="mob-fullscreen" type="button" aria-label="Full screen">
+      <button class="btn-app btn-app-primary flex-1 font-semibold" id="mob-start" type="button">{a.controls.startExam}</button>
+      <button class="btn-app hidden flex-1 font-semibold" id="mob-pause" type="button">{a.controls.pause}</button>
+      <button class="btn-app px-3" id="mob-reset" type="button">{a.controls.reset}</button>
+      <button class="btn-app hidden px-3" id="mob-add" type="button" title={a.controls.mobileAdd5Title}>+5</button>
+      <button class="btn-app px-3" id="mob-fullscreen" type="button" aria-label={a.controls.fullScreen}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
         </svg>
       </button>
-      <button class="btn-app px-3" id="mob-settings" type="button" aria-label="Settings">
+      <button class="btn-app px-3" id="mob-settings" type="button" aria-label={t.nav.settings}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83-2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -772,14 +665,14 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-        <h2 class="text-lg font-semibold text-[var(--text-primary)]">Reset current exam?</h2>
+        <h2 class="text-lg font-semibold text-[var(--text-primary)]">{a.resetModal.title}</h2>
       </div>
       <p class="mt-2.5 text-sm text-[var(--text-secondary)]">
-        The timer will stop and revert to idle. Any elapsed time and extra time will be reset.
+        {a.resetModal.text}
       </p>
       <div class="mt-6 flex gap-2.5">
-        <button class="btn-app btn-app-primary flex-1 font-medium bg-[#ee0000] border-[#ee0000] text-white" id="confirm-reset" type="button">Reset Exam</button>
-        <button class="btn-app flex-1" id="cancel-reset" type="button">Cancel</button>
+        <button class="btn-app btn-app-primary flex-1 font-medium bg-[#ee0000] border-[#ee0000] text-white" id="confirm-reset" type="button">{a.resetModal.confirm}</button>
+        <button class="btn-app flex-1" id="cancel-reset" type="button">{a.resetModal.cancel}</button>
       </div>
     </div>
   </div>
@@ -796,13 +689,15 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
       </div>
-      <p class="eyebrow mt-4 text-[#c50000] dark:text-[#ff6b6b]">Exam Completed</p>
-      <h2 class="mt-1 text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]" id="done-title">PENS DOWN — TIME IS UP</h2>
-      <p class="mt-2 text-sm text-[var(--text-secondary)]" id="done-sub">All candidates must stop writing immediately and remain seated in silence until papers are collected.</p>
-      <button class="btn-pill mt-6 w-full" id="dismiss-done" type="button">Acknowledge & Close</button>
+      <p class="eyebrow mt-4 text-[#c50000] dark:text-[#ff6b6b]">{a.doneModal.eyebrow}</p>
+      <h2 class="mt-1 text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]" id="done-title">{a.doneModal.title}</h2>
+      <p class="mt-2 text-sm text-[var(--text-secondary)]" id="done-sub">{a.doneModal.text}</p>
+      <button class="btn-pill mt-6 w-full" id="dismiss-done" type="button">{a.doneModal.dismiss}</button>
     </div>
   </div>
 </div>
+
+<script id="exam-i18n" type="application/json" set:html={clientStrings} />
 
 <script>
   import { bootExamUi } from '../scripts/exam-ui';

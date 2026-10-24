@@ -1,9 +1,18 @@
+---
+import { languages, type Lang } from '../i18n/ui';
+import { getLangFromUrl, getAlternatePath, useTranslations, useTranslatedPath } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
 <footer class="border-t border-[var(--border-color)] bg-[var(--bg-primary)] px-5 pt-16 pb-12">
   <div class="mx-auto max-w-[1200px]">
     <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-4 pb-12 border-b border-[var(--border-color)]">
       <!-- Col 1: Brand & Purpose -->
       <div class="space-y-3">
-        <a href="/" class="flex items-center gap-2 text-[var(--text-primary)] no-underline">
+        <a href={translatePath('/')} class="flex items-center gap-2 text-[var(--text-primary)] no-underline">
           <span
             class="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--text-primary)] text-[var(--bg-primary)] transition-colors shadow-xs"
             aria-hidden="true"
@@ -20,50 +29,69 @@
           <p class="text-[15px] font-semibold tracking-tight">FreeExamTimer</p>
         </a>
         <p class="max-w-sm text-sm leading-5 text-[var(--text-secondary)]">
-          A hall-ready exam clock built for teachers, invigilators, and students. Reading time, +25% extra time access arrangements, and projector hall mode — 100% free with no ads.
+          {t.footer.tagline}
         </p>
         <div class="inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] font-mono">
           <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-          <span>Zero Tracking • No Ads • Offline Safe</span>
+          <span>{t.footer.badges}</span>
         </div>
       </div>
 
       <!-- Col 2: App & Guides -->
       <div>
-        <p class="eyebrow mb-3">Timer & Guides</p>
+        <p class="eyebrow mb-3">{t.footer.timerGuides}</p>
         <ul class="space-y-2 text-sm text-[var(--text-secondary)]">
-          <li><a href="/" class="transition-colors hover:text-[var(--text-primary)]">Exam Timer</a></li>
-          <li><a href="/how-to" class="transition-colors hover:text-[var(--text-primary)]">How to Use</a></li>
-          <li><a href="/faq" class="transition-colors hover:text-[var(--text-primary)]">FAQ & Help</a></li>
+          <li><a href={translatePath('/')} class="transition-colors hover:text-[var(--text-primary)]">{t.footer.examTimer}</a></li>
+          <li><a href={translatePath('/how-to/')} class="transition-colors hover:text-[var(--text-primary)]">{t.footer.howToUse}</a></li>
+          <li><a href={translatePath('/faq/')} class="transition-colors hover:text-[var(--text-primary)]">{t.footer.faqHelp}</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Company & Support -->
+      <!-- Col 3: Company & Support (English-only pages) -->
       <div>
-        <p class="eyebrow mb-3">About & Contact</p>
+        <p class="eyebrow mb-3">{t.footer.aboutContact}</p>
         <ul class="space-y-2 text-sm text-[var(--text-secondary)]">
-          <li><a href="/about" class="transition-colors hover:text-[var(--text-primary)]">About Us</a></li>
-          <li><a href="/contact" class="transition-colors hover:text-[var(--text-primary)]">Contact Us</a></li>
-          <li><a href="/how-to" class="transition-colors hover:text-[var(--text-primary)]">Hall Projections</a></li>
+          <li><a href="/about" class="transition-colors hover:text-[var(--text-primary)]">{t.footer.aboutUs}</a></li>
+          <li><a href="/contact" class="transition-colors hover:text-[var(--text-primary)]">{t.footer.contactUs}</a></li>
+          <li><a href={translatePath('/how-to/')} class="transition-colors hover:text-[var(--text-primary)]">{t.footer.hallProjections}</a></li>
         </ul>
       </div>
 
-      <!-- Col 4: Legal & Policies -->
+      <!-- Col 4: Legal & Policies (English-only pages) -->
       <div>
-        <p class="eyebrow mb-3">Legal</p>
+        <p class="eyebrow mb-3">{t.footer.legal}</p>
         <ul class="space-y-2 text-sm text-[var(--text-secondary)]">
-          <li><a href="/privacy" class="transition-colors hover:text-[var(--text-primary)]">Privacy Policy</a></li>
-          <li><a href="/terms" class="transition-colors hover:text-[var(--text-primary)]">Terms & Conditions</a></li>
+          <li><a href="/privacy" class="transition-colors hover:text-[var(--text-primary)]">{t.footer.privacy}</a></li>
+          <li><a href="/terms" class="transition-colors hover:text-[var(--text-primary)]">{t.footer.terms}</a></li>
         </ul>
       </div>
     </div>
 
+    <!-- Language links -->
+    <nav class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs" aria-label={t.footer.languages}>
+      <span class="eyebrow">{t.footer.languages}</span>
+      {(Object.entries(languages) as [Lang, string][]).map(([code, label]) => (
+        <a
+          href={getAlternatePath(Astro.url, code)}
+          hreflang={code}
+          lang={code}
+          aria-current={code === lang ? 'page' : undefined}
+          class:list={[
+            'transition-colors hover:text-[var(--text-primary)]',
+            code === lang ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]',
+          ]}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+
     <!-- Bottom utility & action bar -->
     <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <p>© 2026 FreeExamTimer. All rights reserved.</p>
+        <p>{t.footer.rights}</p>
         <span class="hidden sm:inline opacity-30">•</span>
-        <p class="hidden md:inline">Shortcuts: <kbd>Space</kbd> Start/Pause · <kbd>R</kbd> Reset · <kbd>F</kbd> Fullscreen · <kbd>D</kbd> Theme</p>
+        <p class="hidden md:inline" set:html={t.footer.shortcuts} />
       </div>
 
       <!-- Footer Buttons -->
@@ -72,8 +100,8 @@
           type="button"
           data-theme-toggle
           class="btn-app h-8 px-3 py-1 text-xs flex items-center gap-1.5 cursor-pointer"
-          title="Toggle dark/light mode"
-          aria-label="Toggle theme"
+          title={t.footer.themeTitle}
+          aria-label={t.nav.toggleTheme}
         >
           <svg class="theme-icon-sun hidden" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -82,20 +110,23 @@
           <svg class="theme-icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
-          <span>Theme: <span data-theme-label>Light</span></span>
+          <span>
+            {t.footer.theme}
+            <span data-theme-label data-label-dark={t.footer.dark} data-label-light={t.footer.light}>{t.footer.light}</span>
+          </span>
         </button>
 
         <button
           type="button"
           id="btn-back-to-top"
           class="btn-app h-8 px-3 py-1 text-xs flex items-center gap-1.5 cursor-pointer"
-          title="Scroll to top of page"
-          aria-label="Back to top"
+          title={t.footer.topTitle}
+          aria-label={t.footer.topAria}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m18 15-6-6-6 6"></path>
           </svg>
-          <span>Top</span>
+          <span>{t.footer.top}</span>
         </button>
       </div>
     </div>

@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../Nav.astro';
+import Footer from '../Footer.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+---
+
+<Layout
+  title={t.meta.faq.title}
+  description={t.meta.faq.description}
+  i18nPath="/faq/"
+  includeFaq={true}
+>
+  <Nav active="faq" />
+  <main class="mx-auto max-w-[760px] px-5 pt-24 pb-20">
+    <p class="eyebrow">{t.faq.eyebrow}</p>
+    <h1 class="mt-2 text-[36px] md:text-[44px] leading-[44px] font-semibold tracking-[-2px]">
+      {t.faq.title}
+    </h1>
+    <p class="mt-4 text-base leading-6 text-[var(--text-secondary)]">
+      {t.faq.intro}
+    </p>
+
+    <div class="mt-10">
+      <dl class="seo-faq flex flex-col gap-7">
+        {t.faq.items.map((item) => (
+          <div>
+            <dt class="text-[16px] font-semibold text-[var(--text-primary)]">
+              {item.question}
+            </dt>
+            <dd class="mt-2 text-sm leading-relaxed text-[var(--text-secondary)] pl-4 border-l-2 border-[var(--border-color)]">
+              {item.answer}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="card mt-12 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <p class="font-medium">{t.faq.ctaTitle}</p>
+        <p class="mt-1 text-sm text-[var(--text-secondary)]">
+          {t.faq.ctaText}
+        </p>
+      </div>
+      <a href={translatePath('/')} class="btn-pill shrink-0">{t.faq.ctaButton}</a>
+    </div>
+  </main>
+  <Footer />
+</Layout>

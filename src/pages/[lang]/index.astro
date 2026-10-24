@@ -1,0 +1,8 @@
+---
+import HomePage from '../../components/pages/HomePage.astro';
+import { getLocalizedStaticPaths } from '../../i18n/utils';
+
+export const getStaticPaths = getLocalizedStaticPaths;
+---
+
+<HomePage />

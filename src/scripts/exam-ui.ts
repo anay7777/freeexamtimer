@@ -13,8 +13,14 @@ import {
 } from '../lib/exam-engine';
 import { playAlert, playTone, resumeAudio } from '../lib/audio';
 import { findCountryTimeZone } from '../data/timezones';
+import { fmt } from '../i18n/fmt';
+import type { Dictionary } from '../i18n/locales/en';
+
+type ClientStrings = Dictionary['client'] & { sounds: Record<string, string> };
 
 const engine = new ExamEngine();
+// Localized runtime strings, rendered into #exam-i18n by ExamApp.astro
+let t = {} as ClientStrings;
 let settings: AppSettings = loadSettings();
 let wakeLock: WakeLockSentinel | null = null;
 let tickTimer = 0;
@@ -60,8 +66,8 @@ function applyTheme(theme: 'light' | 'dark'): void {
 
   document.querySelectorAll('.theme-icon-sun').forEach((el) => el.classList.toggle('hidden', !dark));
   document.querySelectorAll('.theme-icon-moon').forEach((el) => el.classList.toggle('hidden', dark));
-  document.querySelectorAll('[data-theme-label]').forEach((el) => {
-    el.textContent = dark ? 'Dark' : 'Light';
+  document.querySelectorAll<HTMLElement>('[data-theme-label]').forEach((el) => {
+    el.textContent = dark ? el.dataset.labelDark || 'Dark' : el.dataset.labelLight || 'Light';
   });
 
   const toggle = input('toggle-dark');
@@ -97,7 +103,7 @@ function setTimeZone(tzId: string, announce = false): void {
 
   render();
   if (announce) {
-    toast(`Country standard time: ${meta.flag} ${meta.country} (${meta.abbr})`);
+    toast(fmt(t.toastTimeZone, { tz: `${meta.flag} ${meta.country} (${meta.abbr})` }));
   }
 }
 
@@ -175,7 +181,7 @@ function syncConfig(): void {
 
 function clearSetupForm(): void {
   if (engine.phase !== 'idle') {
-    toast('Cannot clear while exam is running');
+    toast(t.toastCannotClear);
     return;
   }
   const title = input('input-title');
@@ -208,7 +214,7 @@ function clearSetupForm(): void {
   setTimeZone('local', false);
   syncConfig();
   render();
-  toast('Panel inputs cleared');
+  toast(t.toastCleared);
 }
 
 function setSetupDisabled(disabled: boolean): void {
@@ -266,8 +272,28 @@ function updateElementText(id: string, text: string): void {
   if (el) el.textContent = text;
 }
 
+function phaseText(): { label: string; directive: string } {
+  switch (engine.phase) {
+    case 'reading':
+      return { label: t.phases.reading, directive: t.directives.reading };
+    case 'writing':
+      return { label: t.phases.writing, directive: t.directives.writing };
+    case 'finished':
+      return { label: t.phases.finished, directive: t.directives.finished };
+    default:
+      if (engine.config.readingSeconds > 0) {
+        const n = Math.round(engine.config.readingSeconds / 60);
+        return { label: t.phases.readyReading, directive: fmt(t.directives.readyReading, { n }) };
+      }
+      return { label: t.phases.ready, directive: t.directives.ready };
+  }
+}
+
 function render(): void {
   const view = engine.tick();
+  const phase = phaseText();
+  const phaseLabel = view.isPaused ? fmt(t.paused, { label: phase.label }) : phase.label;
+  const directive = view.isPaused ? t.pausedDirective : phase.directive;
 
   // Primary timer readout
   updateElementText('timer-display', view.remainingLabel);
@@ -277,21 +303,21 @@ function render(): void {
   const phaseChip = $('phase-chip');
   if (phaseChip) {
     phaseChip.className = `${view.phaseBadgeClass} rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider`;
-    phaseChip.textContent = view.isPaused ? `${view.phaseLabel} · Paused` : view.phaseLabel;
+    phaseChip.textContent = phaseLabel;
   }
 
   const fsPhaseChip = $('fs-phase-chip');
   if (fsPhaseChip) {
     fsPhaseChip.className = `${view.phaseBadgeClass} rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider`;
-    fsPhaseChip.textContent = view.isPaused ? `${view.phaseLabel} · Paused` : view.phaseLabel;
+    fsPhaseChip.textContent = phaseLabel;
   }
 
-  updateElementText('phase-directive', view.isPaused ? 'Timer is paused. Press Resume to continue.' : view.phaseSubLabel);
-  updateElementText('fs-directive', view.isPaused ? 'Timer is paused. Press Resume to continue.' : view.phaseSubLabel);
+  updateElementText('phase-directive', directive);
+  updateElementText('fs-directive', directive);
 
   // Exam Titles
   updateElementText('display-title', engine.config.title);
-  updateElementText('fs-title', engine.config.title || 'Examination in Progress');
+  updateElementText('fs-title', engine.config.title || t.examInProgress);
   updateElementText('display-centre', engine.config.centre);
   updateElementText('fs-centre', engine.config.centre);
 
@@ -322,7 +348,7 @@ function render(): void {
   // Live preview clock under Automatic Scheduled Start
   const autoPreview = $('autostart-tz-preview');
   if (autoPreview) {
-    autoPreview.textContent = `Current: ${view.currentTimeLabel} ${view.timeZoneAbbr}`;
+    autoPreview.textContent = fmt(t.currentPreview, { time: view.currentTimeLabel, tz: view.timeZoneAbbr });
   }
 
   // Show/Hide Extra 25% Clock box based on settings
@@ -342,8 +368,8 @@ function render(): void {
   $('extra-badge')?.classList.toggle('hidden', !extraOn);
   $('fs-extra-badge')?.classList.toggle('hidden', !extraOn);
   if (extraOn) {
-    updateElementText('extra-badge', `Extended +${view.extraMinutes} min`);
-    updateElementText('fs-extra-badge', `Extended +${view.extraMinutes} min`);
+    updateElementText('extra-badge', fmt(t.extendedBadge, { n: view.extraMinutes }));
+    updateElementText('fs-extra-badge', fmt(t.extendedBadge, { n: view.extraMinutes }));
   }
 
   // Instructions Banner
@@ -382,8 +408,8 @@ function render(): void {
   $('fs-btn-pause')?.classList.toggle('hidden', !running || engine.isPaused);
   $('fs-btn-add-5')?.classList.toggle('hidden', idle || engine.phase === 'finished');
 
-  const startLabel = engine.isPaused ? 'Resume exam' : engine.phase === 'finished' ? 'Start again' : 'Start exam';
-  const mobStartLabel = engine.isPaused ? 'Resume' : engine.phase === 'finished' ? 'Restart' : 'Start';
+  const startLabel = engine.isPaused ? t.resumeExam : engine.phase === 'finished' ? t.startAgain : t.startExam;
+  const mobStartLabel = engine.isPaused ? t.resume : engine.phase === 'finished' ? t.restart : t.start;
 
   updateElementText('btn-start', startLabel);
   updateElementText('mob-start', mobStartLabel);
@@ -398,19 +424,19 @@ function render(): void {
 
   // Phase transition events
   if (view.justEnteredWriting) {
-    toast('Reading time is over. Writing time has started.');
+    toast(t.toastReadingOver);
     if (!settings.silent) playTone(settings.sound, settings.volume);
   }
 
   for (const w of view.justCrossedWarnings) {
-    const mins = w >= 60 ? `${w / 60} min` : `${w}s`;
-    toast(`Warning: ${mins} remaining`);
+    const mins = w >= 60 ? fmt(t.unitMin, { n: w / 60 }) : fmt(t.unitSec, { n: w });
+    toast(fmt(t.toastWarning, { time: mins }));
     if (!settings.silent) playTone(settings.sound, settings.volume);
   }
 
   if (view.justFinished) {
     openModal('done-modal');
-    updateElementText('done-title', engine.config.title ? `${engine.config.title} — TIME IS UP` : 'PENS DOWN — TIME IS UP');
+    updateElementText('done-title', engine.config.title ? fmt(t.timeUpTitle, { title: engine.config.title }) : t.pensDown);
     if (!settings.silent) playAlert(settings.sound, settings.volume);
     if (settings.flash) flashScreen();
     void releaseWake();
@@ -426,7 +452,7 @@ function render(): void {
   // Automatic Start check
   if (engine.shouldAutoStart()) {
     void startExam();
-    toast('Automatic scheduled start triggered');
+    toast(t.toastAutoStart);
   }
 }
 
@@ -445,9 +471,10 @@ function flashScreen(): void {
 async function startExam(): Promise<void> {
   await resumeAudio();
   syncConfig();
+  const finishedBefore = engine.phase === 'finished';
   const result = engine.start();
   if (!result.ok) {
-    toast(result.error ?? 'Cannot start exam');
+    toast(result.error ? (finishedBefore ? t.errFinished : t.errNoWriting) : t.toastCannotStart);
     return;
   }
   await requestWake();
@@ -476,7 +503,7 @@ function doReset(): void {
   void releaseWake();
   syncConfig();
   render();
-  toast('Exam reset');
+  toast(t.toastReset);
 }
 
 function enterFullscreen(): void {
@@ -524,6 +551,8 @@ function persistSettings(): void {
 }
 
 export function bootExamUi(): void {
+  t = JSON.parse($('exam-i18n')?.textContent || '{}') as ClientStrings;
+
   // Theme initialization
   try {
     const saved = localStorage.getItem('fet-theme');
@@ -641,7 +670,7 @@ export function bootExamUi(): void {
       if (mEl) mEl.value = String(m);
       if (sEl) sEl.value = '0';
       onSetupInput();
-      toast(`Duration set to ${mins} minutes`);
+      toast(fmt(t.toastDuration, { n: mins }));
     });
   });
 
@@ -653,7 +682,7 @@ export function bootExamUi(): void {
       const readEl = input('input-reading');
       if (readEl) readEl.value = mins;
       onSetupInput();
-      toast(`Reading time: ${mins} min`);
+      toast(fmt(t.toastReading, { n: mins }));
     });
   });
 
@@ -665,7 +694,7 @@ export function bootExamUi(): void {
       const extraEl = input('input-extra');
       if (extraEl) extraEl.value = mins;
       onSetupInput();
-      toast(`Extra time: ${mins} min`);
+      toast(fmt(t.toastExtra, { n: mins }));
     });
   });
 
@@ -675,7 +704,7 @@ export function bootExamUi(): void {
     const extraEl = input('input-extra');
     if (extraEl) extraEl.value = String(calcMins);
     onSetupInput();
-    toast(`Calculated 25% extra time: +${calcMins} minutes`);
+    toast(fmt(t.toastCalc25, { n: calcMins }));
   });
 
   // Rule insertion chips
@@ -687,7 +716,7 @@ export function bootExamUi(): void {
       const current = area.value.trim();
       area.value = current ? `${current}\n• ${rule}` : `• ${rule}`;
       onSetupInput();
-      toast('Rule added to notice');
+      toast(t.toastRuleAdded);
     });
   });
 
@@ -709,28 +738,28 @@ export function bootExamUi(): void {
   // Quick Extra Time additions (+5, +15, +25%)
   $('btn-add-5')?.addEventListener('click', () => {
     engine.addExtraMinutes(5);
-    toast('+5 minutes extra writing time added');
+    toast(t.toastAdded5Writing);
     render();
   });
   $('mob-add')?.addEventListener('click', () => {
     engine.addExtraMinutes(5);
-    toast('+5 minutes extra time added');
+    toast(t.toastAdded5);
     render();
   });
   $('fs-btn-add-5')?.addEventListener('click', () => {
     engine.addExtraMinutes(5);
-    toast('+5 minutes extra time added');
+    toast(t.toastAdded5);
     render();
   });
   $('btn-add-15')?.addEventListener('click', () => {
     engine.addExtraMinutes(15);
-    toast('+15 minutes extra writing time added');
+    toast(t.toastAdded15Writing);
     render();
   });
   $('btn-add-25pct')?.addEventListener('click', () => {
     const mins = engine.calculate25PercentMinutes();
     engine.addExtraMinutes(mins);
-    toast(`+${mins} min (25% extra time) added`);
+    toast(fmt(t.toastAdded25, { n: mins }));
     render();
   });
 
@@ -746,9 +775,9 @@ export function bootExamUi(): void {
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast('Exam configuration link copied to clipboard!');
+      toast(t.toastLinkCopied);
     } catch {
-      toast('Copied URL to address bar');
+      toast(t.toastUrlInBar);
     }
   });
 
@@ -831,7 +860,7 @@ export function bootExamUi(): void {
   $('btn-test-sound')?.addEventListener('click', async () => {
     await resumeAudio();
     playTone(settings.sound, settings.volume);
-    toast(`Playing sample sound: ${settings.sound}`);
+    toast(fmt(t.toastTestSound, { sound: t.sounds[settings.sound] ?? settings.sound }));
   });
 
   ['warn-30', 'warn-15', 'warn-10', 'warn-5', 'warn-1'].forEach((id) => {
@@ -849,7 +878,7 @@ export function bootExamUi(): void {
   toggleSetup?.addEventListener('click', () => {
     if (!setupBody) return;
     const hidden = setupBody.classList.toggle('hidden');
-    toggleSetup.textContent = hidden ? 'Show' : 'Hide';
+    toggleSetup.textContent = hidden ? t.show : t.hide;
   });
 
   $('btn-clear-setup')?.addEventListener('click', clearSetupForm);

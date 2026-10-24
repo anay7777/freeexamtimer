@@ -3,13 +3,29 @@ interface Props {
   active?: 'home' | 'how-to' | 'faq' | 'about' | 'contact' | 'privacy' | 'terms' | string;
   examControls?: boolean;
 }
+import LanguagePicker from './LanguagePicker.astro';
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/utils';
+
 const { active = 'home', examControls = false } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+// About and Contact are English-only pages
+const links = [
+  { id: 'home', href: translatePath('/'), label: t.nav.timer },
+  { id: 'how-to', href: translatePath('/how-to/'), label: t.nav.howTo },
+  { id: 'faq', href: translatePath('/faq/'), label: t.nav.faq },
+  { id: 'about', href: '/about', label: t.nav.about },
+  { id: 'contact', href: '/contact', label: t.nav.contact },
+];
 ---
 
 <nav
   class="fixed top-0 right-0 left-0 z-[100] flex h-14 items-center justify-between border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-4 md:px-6"
 >
-  <a href="/" class="flex items-center gap-2 text-[var(--text-primary)] no-underline">
+  <a href={translatePath('/')} class="flex items-center gap-2 text-[var(--text-primary)] no-underline">
     <span
       class="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[var(--text-primary)] text-[var(--bg-primary)] transition-colors shadow-xs"
       aria-hidden="true"
@@ -33,52 +49,32 @@ const { active = 'home', examControls = false } = Astro.props;
   </a>
 
   <div class="hidden items-center gap-1 md:flex">
-    <a
-      href="/"
-      class:list={[
-        'rounded-full px-3 py-2 text-sm transition-colors',
-        active === 'home' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-      ]}>Timer</a
-    >
-    <a
-      href="/how-to"
-      class:list={[
-        'rounded-full px-3 py-2 text-sm transition-colors',
-        active === 'how-to' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-      ]}>How to use</a
-    >
-    <a
-      href="/faq"
-      class:list={[
-        'rounded-full px-3 py-2 text-sm transition-colors',
-        active === 'faq' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-      ]}>FAQ</a
-    >
-    <a
-      href="/about"
-      class:list={[
-        'rounded-full px-3 py-2 text-sm transition-colors',
-        active === 'about' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-      ]}>About</a
-    >
-    <a
-      href="/contact"
-      class:list={[
-        'rounded-full px-3 py-2 text-sm transition-colors',
-        active === 'contact' ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
-      ]}>Contact</a
-    >
+    {links.map((link) => (
+      <a
+        href={link.href}
+        class:list={[
+          'rounded-full px-3 py-2 text-sm transition-colors',
+          active === link.id ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
+        ]}
+      >
+        {link.label}
+      </a>
+    ))}
   </div>
 
   <div class="flex items-center gap-2">
+    <LanguagePicker />
+    <!-- Hidden on mobile to make room for the language picker; the mobile bottom bar has its own full-screen button -->
     {examControls && (
-      <button class="btn-app" id="btn-fullscreen" type="button" title="Full screen (F)" aria-label="Full screen">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-        </svg>
-      </button>
+      <span class="hidden md:contents">
+        <button class="btn-app" id="btn-fullscreen" type="button" title={t.nav.fullScreenTitle} aria-label={t.nav.fullScreen}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </button>
+      </span>
     )}
-    <button class="btn-app" id="btn-theme" type="button" title="Toggle theme (D)" aria-label="Toggle theme">
+    <button class="btn-app" id="btn-theme" type="button" title={t.nav.toggleThemeTitle} aria-label={t.nav.toggleTheme}>
       <svg id="icon-sun" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="5"></circle>
         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
@@ -88,7 +84,7 @@ const { active = 'home', examControls = false } = Astro.props;
       </svg>
     </button>
     {examControls && (
-      <button class="btn-app" id="btn-settings" type="button" title="Settings" aria-label="Settings">
+      <button class="btn-app" id="btn-settings" type="button" title={t.nav.settings} aria-label={t.nav.settings}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"></circle>
           <path
