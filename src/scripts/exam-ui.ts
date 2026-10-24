@@ -173,10 +173,50 @@ function syncConfig(): void {
   engine.applyConfig(readConfigFromForm());
 }
 
+function clearSetupForm(): void {
+  if (engine.phase !== 'idle') {
+    toast('Cannot clear while exam is running');
+    return;
+  }
+  const title = input('input-title');
+  if (title) title.value = '';
+
+  const centre = input('input-centre');
+  if (centre) centre.value = '';
+
+  const hEl = input('input-hours');
+  if (hEl) hEl.value = '0';
+
+  const mEl = input('input-minutes');
+  if (mEl) mEl.value = '0';
+
+  const sEl = input('input-seconds');
+  if (sEl) sEl.value = '0';
+
+  const readEl = input('input-reading');
+  if (readEl) readEl.value = '0';
+
+  const extraEl = input('input-extra');
+  if (extraEl) extraEl.value = '0';
+
+  const autoEl = input('input-autostart');
+  if (autoEl) autoEl.value = '';
+
+  const instrEl = document.getElementById('input-instructions') as HTMLTextAreaElement | null;
+  if (instrEl) instrEl.value = '';
+
+  setTimeZone('local', false);
+  syncConfig();
+  render();
+  toast('Panel inputs cleared');
+}
+
 function setSetupDisabled(disabled: boolean): void {
-  document.querySelectorAll('#setup-body input, #setup-body textarea, #setup-body button').forEach((el) => {
+  document.querySelectorAll('#setup-body input, #setup-body textarea, #setup-body button, #setup-body select').forEach((el) => {
     (el as HTMLInputElement).disabled = disabled;
   });
+  const clearBtn = document.getElementById('btn-clear-setup') as HTMLButtonElement | null;
+  if (clearBtn) clearBtn.disabled = disabled;
 }
 
 function openSettings(): void {
@@ -374,6 +414,13 @@ function render(): void {
     if (!settings.silent) playAlert(settings.sound, settings.volume);
     if (settings.flash) flashScreen();
     void releaseWake();
+
+    // Automatically reset the timer after it stops, but do not start it
+    engine.reset();
+    syncConfig();
+  } else if (engine.phase === 'finished') {
+    engine.reset();
+    syncConfig();
   }
 
   // Automatic Start check
@@ -796,7 +843,7 @@ export function bootExamUi(): void {
 
   $('dismiss-done')?.addEventListener('click', () => closeModal('done-modal'));
 
-  // Mobile Setup Accordion Toggle
+  // Setup Accordion Toggle & Clear Button
   const setupBody = $('setup-body');
   const toggleSetup = $('btn-toggle-setup');
   toggleSetup?.addEventListener('click', () => {
@@ -804,6 +851,8 @@ export function bootExamUi(): void {
     const hidden = setupBody.classList.toggle('hidden');
     toggleSetup.textContent = hidden ? 'Show' : 'Hide';
   });
+
+  $('btn-clear-setup')?.addEventListener('click', clearSetupForm);
 
   // Browser Fullscreen change listener
   document.addEventListener('fullscreenchange', () => {

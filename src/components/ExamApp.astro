@@ -399,7 +399,10 @@ const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East 
             <p class="eyebrow">Exam Configuration</p>
             <span class="text-xs text-[var(--text-muted)]">(editable while idle)</span>
           </div>
-          <button class="btn-app h-7 min-h-0 px-2.5 text-xs md:hidden" id="btn-toggle-setup" type="button">Hide</button>
+          <div class="flex items-center gap-2">
+            <button class="btn-app h-7 min-h-0 px-2.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]" id="btn-clear-setup" type="button" title="Clear all configuration inputs in panel">Clear</button>
+            <button class="btn-app h-7 min-h-0 px-2.5 text-xs" id="btn-toggle-setup" type="button">Hide</button>
+          </div>
         </div>
 
         <div id="setup-body" class="flex flex-col gap-5">
