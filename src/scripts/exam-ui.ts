@@ -12,6 +12,7 @@ import {
   type AppSettings,
 } from '../lib/exam-engine';
 import { playAlert, playTone, resumeAudio } from '../lib/audio';
+import { findCountryTimeZone } from '../data/timezones';
 
 const engine = new ExamEngine();
 let settings: AppSettings = loadSettings();
@@ -81,6 +82,25 @@ function warningsFromUi(): number[] {
   return list;
 }
 
+function setTimeZone(tzId: string, announce = false): void {
+  const meta = findCountryTimeZone(tzId);
+  settings.timeZone = meta.id;
+  engine.setTimeZone(meta.id);
+  saveSettings(settings);
+
+  ['select-timezone-clock', 'select-timezone-autostart', 'select-timezone-settings', 'fs-select-timezone'].forEach((id) => {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (sel && sel.value !== meta.id) {
+      sel.value = meta.id;
+    }
+  });
+
+  render();
+  if (announce) {
+    toast(`Country standard time: ${meta.flag} ${meta.country} (${meta.abbr})`);
+  }
+}
+
 function readConfigFromForm(): ExamConfig {
   const title = input('input-title')?.value.trim() ?? '';
   const centre = input('input-centre')?.value.trim() ?? '';
@@ -91,6 +111,11 @@ function readConfigFromForm(): ExamConfig {
   const reading = Math.max(0, (parseInt(input('input-reading')?.value ?? '0', 10) || 0) * 60);
   const extra = Math.max(0, (parseInt(input('input-extra')?.value ?? '0', 10) || 0) * 60);
   const autoStart = input('input-autostart')?.value || null;
+  const timeZone =
+    (document.getElementById('select-timezone-autostart') as HTMLSelectElement)?.value ||
+    (document.getElementById('select-timezone-clock') as HTMLSelectElement)?.value ||
+    settings.timeZone ||
+    'local';
 
   return {
     ...engine.config,
@@ -101,6 +126,7 @@ function readConfigFromForm(): ExamConfig {
     readingSeconds: reading,
     extraSeconds: extra,
     autoStartTime: autoStart,
+    timeZone,
     warnings: warningsFromUi(),
     showSeconds: settings.showSeconds,
     hideSecondsUntil5m: settings.hideSecondsUntil5m,
@@ -134,6 +160,12 @@ function fillForm(config: ExamConfig): void {
 
   const autoEl = input('input-autostart');
   if (autoEl) autoEl.value = config.autoStartTime ?? '';
+
+  const tz = config.timeZone || settings.timeZone || 'local';
+  ['select-timezone-clock', 'select-timezone-autostart', 'select-timezone-settings', 'fs-select-timezone'].forEach((id) => {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (sel) sel.value = tz;
+  });
 }
 
 function syncConfig(): void {
@@ -232,6 +264,26 @@ function render(): void {
   updateElementText('fs-finish', view.finishTimeLabel);
   updateElementText('clock-extra-finish', view.extra25FinishLabel);
   updateElementText('fs-extra-finish', view.extra25FinishLabel);
+
+  // Timezone Badges & Labels
+  updateElementText('clock-current-badge', view.timeZoneAbbr);
+  updateElementText('clock-start-badge', view.timeZoneAbbr);
+  updateElementText('clock-finish-badge', view.timeZoneAbbr);
+  updateElementText('clock-extra-finish-badge', view.timeZoneAbbr);
+  updateElementText('fs-current-badge', view.timeZoneAbbr);
+  updateElementText('fs-start-badge', view.timeZoneAbbr);
+  updateElementText('fs-finish-badge', view.timeZoneAbbr);
+  updateElementText('fs-extra-finish-badge', view.timeZoneAbbr);
+  updateElementText('display-tz-label', view.timeZoneLabel);
+  updateElementText('display-tz-flag', view.timeZoneFlag);
+  updateElementText('fs-tz-label', view.timeZoneLabel);
+  updateElementText('fs-tz-flag', view.timeZoneFlag);
+
+  // Live preview clock under Automatic Scheduled Start
+  const autoPreview = $('autostart-tz-preview');
+  if (autoPreview) {
+    autoPreview.textContent = `Current: ${view.currentTimeLabel} ${view.timeZoneAbbr}`;
+  }
 
   // Show/Hide Extra 25% Clock box based on settings
   const showExtraClock = settings.showExtraClock;
@@ -407,12 +459,14 @@ function exitFullscreen(): void {
 
 function persistSettings(): void {
   settings.warnings = warningsFromUi();
+  settings.timeZone = engine.timeZone;
   saveSettings(settings);
   engine.config.showSeconds = settings.showSeconds;
   engine.config.hideSecondsUntil5m = settings.hideSecondsUntil5m;
   engine.config.silent = settings.silent;
   engine.config.warnings = settings.warnings;
   engine.hour12 = settings.hour12;
+  engine.config.timeZone = engine.timeZone;
 
   // Scale timer display font
   const scale = settings.timerScale / 100;
@@ -496,9 +550,25 @@ export function bootExamUi(): void {
     engine.applyConfig(fromUrl);
   }
 
+  // Active timezone determination
+  const initialTz = fromUrl.timeZone || engine.config.timeZone || settings.timeZone || 'local';
+  setTimeZone(initialTz, false);
+
   fillForm(engine.config);
   persistSettings();
   render();
+
+  // Country timezone select change listeners across the entire app
+  ['select-timezone-clock', 'select-timezone-autostart', 'select-timezone-settings', 'fs-select-timezone'].forEach((id) => {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (sel) {
+      sel.value = engine.timeZone;
+      sel.addEventListener('change', () => {
+        setTimeZone(sel.value, true);
+        syncConfig();
+      });
+    }
+  });
 
   // Setup inputs change handler
   const onSetupInput = () => {

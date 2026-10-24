@@ -1,3 +1,5 @@
+import { findCountryTimeZone, formatClockWithZone } from '../data/timezones';
+
 export type Phase = 'idle' | 'reading' | 'writing' | 'finished';
 
 export type SecondsDisplayMode = 'always' | 'final5m' | 'never';
@@ -11,6 +13,7 @@ export interface ExamConfig {
   extraSeconds: number;
   warnings: number[];
   autoStartTime: string | null;
+  timeZone: string;
   showSeconds: boolean;
   hideSecondsUntil5m: boolean;
   silent: boolean;
@@ -28,6 +31,7 @@ export interface ExamSnapshot {
   extraAddedMs: number;
   firedWarnings: number[];
   readingComplete: boolean;
+  timeZone?: string;
 }
 
 export interface ExamView {
@@ -40,6 +44,10 @@ export interface ExamView {
   startTimeLabel: string;
   finishTimeLabel: string;
   extra25FinishLabel: string;
+  timeZone: string;
+  timeZoneLabel: string;
+  timeZoneAbbr: string;
+  timeZoneFlag: string;
   phaseLabel: string;
   phaseBadgeClass: string;
   phaseSubLabel: string;
@@ -62,6 +70,7 @@ export const DEFAULT_CONFIG: ExamConfig = {
   extraSeconds: 0,
   warnings: [900, 300, 60],
   autoStartTime: null,
+  timeZone: 'local',
   showSeconds: true,
   hideSecondsUntil5m: false,
   silent: false,
@@ -71,14 +80,8 @@ export function pad2(n: number): string {
   return String(Math.floor(Math.abs(n))).padStart(2, '0');
 }
 
-export function formatClock(date: Date, hour12: boolean, withSeconds = true): string {
-  const opts: Intl.DateTimeFormatOptions = {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12,
-  };
-  if (withSeconds) opts.second = '2-digit';
-  return date.toLocaleTimeString(undefined, opts);
+export function formatClock(date: Date, hour12: boolean, withSeconds = true, timeZone = 'local'): string {
+  return formatClockWithZone(date, hour12, withSeconds, timeZone);
 }
 
 export function formatDuration(ms: number, showSeconds: boolean, hideSecondsUntil5m = false): string {
@@ -129,6 +132,8 @@ export function parseQueryConfig(search: string): Partial<ExamConfig> {
   if (centre) partial.centre = centre.slice(0, 80);
   const instr = params.get('instr');
   if (instr) partial.instructions = instr.slice(0, 400);
+  const tz = params.get('tz');
+  if (tz) partial.timeZone = tz;
   return partial;
 }
 
@@ -143,11 +148,13 @@ export function toQueryString(config: ExamConfig): string {
   if (config.title) params.set('title', config.title);
   if (config.centre) params.set('centre', config.centre);
   if (config.instructions) params.set('instr', config.instructions);
+  if (config.timeZone && config.timeZone !== 'local') params.set('tz', config.timeZone);
   return params.toString();
 }
 
 export interface AppSettings {
   hour12: boolean;
+  timeZone: string;
   showSeconds: boolean;
   hideSecondsUntil5m: boolean;
   silent: boolean;
@@ -162,6 +169,7 @@ export interface AppSettings {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   hour12: false,
+  timeZone: 'local',
   showSeconds: true,
   hideSecondsUntil5m: false,
   silent: false,
@@ -178,7 +186,13 @@ export function loadSettings(): AppSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS, warnings: [...DEFAULT_SETTINGS.warnings] };
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_SETTINGS,
+      ...parsed,
+      timeZone: parsed.timeZone || 'local',
+      warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [...DEFAULT_SETTINGS.warnings],
+    };
   } catch {
     return { ...DEFAULT_SETTINGS, warnings: [...DEFAULT_SETTINGS.warnings] };
   }
@@ -209,6 +223,7 @@ export class ExamEngine {
   firedWarnings: number[] = [];
   readingComplete = false;
   hour12 = false;
+  timeZone = 'local';
   private autoStartArmedKey: string | null = null;
 
   remainingMs(now = Date.now()): number {
@@ -240,6 +255,15 @@ export class ExamEngine {
   applyConfig(next: Partial<ExamConfig>): void {
     if (this.phase !== 'idle') return;
     this.config = { ...this.config, ...next };
+    if (next.timeZone !== undefined) {
+      this.timeZone = next.timeZone;
+    }
+    this.persist();
+  }
+
+  setTimeZone(tz: string): void {
+    this.timeZone = tz;
+    this.config.timeZone = tz;
     this.persist();
   }
 
@@ -406,7 +430,7 @@ export class ExamEngine {
 
     const current = new Date(now);
     const startLabel = this.startedAt
-      ? formatClock(new Date(this.startedAt), this.hour12, false)
+      ? formatClock(new Date(this.startedAt), this.hour12, false, this.timeZone)
       : '—';
 
     // Finish time calculation
@@ -419,16 +443,18 @@ export class ExamEngine {
     const extra25Sec = Math.round(baseDuration * 0.25);
 
     if (this.scheduledFinishAt != null) {
-      finishLabel = formatClock(new Date(this.scheduledFinishAt), this.hour12, false);
+      finishLabel = formatClock(new Date(this.scheduledFinishAt), this.hour12, false, this.timeZone);
       const extra25Timestamp = this.scheduledFinishAt + extra25Sec * 1000;
-      extra25FinishLabel = formatClock(new Date(extra25Timestamp), this.hour12, false);
+      extra25FinishLabel = formatClock(new Date(extra25Timestamp), this.hour12, false, this.timeZone);
     } else if (this.phase === 'idle') {
       const totalSec = readingSec + baseDuration + extraSec;
       if (totalSec > 0) {
-        finishLabel = formatClock(new Date(now + totalSec * 1000), this.hour12, false);
-        extra25FinishLabel = formatClock(new Date(now + (totalSec + extra25Sec) * 1000), this.hour12, false);
+        finishLabel = formatClock(new Date(now + totalSec * 1000), this.hour12, false, this.timeZone);
+        extra25FinishLabel = formatClock(new Date(now + (totalSec + extra25Sec) * 1000), this.hour12, false, this.timeZone);
       }
     }
+
+    const tzMeta = findCountryTimeZone(this.timeZone);
 
     return {
       phase: this.phase,
@@ -436,10 +462,14 @@ export class ExamEngine {
       remainingMs,
       remainingLabel: formatDuration(remainingMs, this.config.showSeconds, this.config.hideSecondsUntil5m),
       progress: this.progress(now),
-      currentTimeLabel: formatClock(current, this.hour12, true),
+      currentTimeLabel: formatClock(current, this.hour12, true, this.timeZone),
       startTimeLabel: startLabel,
       finishTimeLabel: finishLabel,
       extra25FinishLabel,
+      timeZone: this.timeZone,
+      timeZoneLabel: tzMeta.name,
+      timeZoneAbbr: tzMeta.abbr,
+      timeZoneFlag: tzMeta.flag,
       phaseLabel,
       phaseBadgeClass,
       phaseSubLabel,
@@ -455,12 +485,47 @@ export class ExamEngine {
     if (this.phase !== 'idle' || !this.config.autoStartTime) return false;
     const [hh, mm] = this.config.autoStartTime.split(':').map(Number);
     if (Number.isNaN(hh) || Number.isNaN(mm)) return false;
-    const d = new Date(now);
-    if (d.getHours() !== hh || d.getMinutes() !== mm) {
+
+    let currentHours: number;
+    let currentMinutes: number;
+    let dateKey: string;
+
+    const tz = this.timeZone && this.timeZone !== 'local' ? this.timeZone : null;
+    if (tz) {
+      try {
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz,
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: false,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+        const parts = formatter.formatToParts(new Date(now));
+        const getVal = (type: string) => parts.find((p) => p.type === type)?.value ?? '0';
+        currentHours = parseInt(getVal('hour'), 10);
+        if (currentHours === 24) currentHours = 0;
+        currentMinutes = parseInt(getVal('minute'), 10);
+        dateKey = `${getVal('year')}-${getVal('month')}-${getVal('day')}`;
+      } catch {
+        const d = new Date(now);
+        currentHours = d.getHours();
+        currentMinutes = d.getMinutes();
+        dateKey = d.toDateString();
+      }
+    } else {
+      const d = new Date(now);
+      currentHours = d.getHours();
+      currentMinutes = d.getMinutes();
+      dateKey = d.toDateString();
+    }
+
+    if (currentHours !== hh || currentMinutes !== mm) {
       this.autoStartArmedKey = null;
       return false;
     }
-    const key = `${this.config.autoStartTime}-${d.toDateString()}`;
+    const key = `${this.config.autoStartTime}-${this.timeZone || 'local'}-${dateKey}`;
     if (this.autoStartArmedKey === key) return false;
     this.autoStartArmedKey = key;
     return true;
@@ -480,6 +545,7 @@ export class ExamEngine {
         extraAddedMs: this.extraAddedMs,
         firedWarnings: this.firedWarnings,
         readingComplete: this.readingComplete,
+        timeZone: this.timeZone,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
     } catch {
@@ -493,6 +559,12 @@ export class ExamEngine {
       if (!raw) return false;
       const snap = JSON.parse(raw) as ExamSnapshot;
       this.config = { ...DEFAULT_CONFIG, ...snap.config };
+      if (snap.timeZone) {
+        this.timeZone = snap.timeZone;
+        this.config.timeZone = snap.timeZone;
+      } else if (snap.config?.timeZone) {
+        this.timeZone = snap.config.timeZone;
+      }
       this.phase = snap.phase;
       this.isPaused = snap.isPaused;
       this.phaseEndAt = snap.phaseEndAt;
