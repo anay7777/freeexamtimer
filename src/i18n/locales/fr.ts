@@ -350,6 +350,40 @@ const fr: Dictionary = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Réponse rapide',
+      summary:
+        "<strong>FreeExamTimer</strong> (freeexamtimer.com) est un minuteur d'examen en ligne gratuit et une horloge d'examen plein écran avec compte à rebours, conçue pour les enseignants, les surveillants et les élèves. Il fonctionne dans n'importe quel navigateur, sans téléchargement, sans inscription et sans publicité. Il gère le temps de lecture avec passage automatique au temps de composition, le tiers-temps (+25 %) pour les aménagements d'examen, les alertes sonores et un affichage vidéoprojecteur en salle, pour le bac, le brevet, les concours, le DELF, le TOEIC, le SAT, l'IELTS, l'IB et bien d'autres.",
+      factsTitle: "FreeExamTimer en un coup d'œil",
+      facts: [
+        { label: 'Prix', value: 'Gratuit : sans inscription, sans publicité, sans fonctions payantes' },
+        {
+          label: 'Appareils',
+          value: "Tout navigateur récent : PC Windows, Mac, Chromebook, iPhone, iPad, Android et vidéoprojecteurs de classe",
+        },
+        { label: 'Durées prédéfinies', value: 'De 15 minutes à 3 heures, ou toute durée exacte en heures, minutes et secondes' },
+        { label: 'Temps de lecture', value: '5, 10 ou 15 minutes, puis passage automatique au temps de composition' },
+        {
+          label: 'Tiers-temps',
+          value: "+25 % pour les aménagements d'examen, avec l'heure de fin normale et l'heure de fin prolongée côte à côte",
+        },
+        { label: 'Affichage en salle', value: 'Mode plein écran (touche F) avec des chiffres lisibles à plus de 30 mètres' },
+        { label: 'Alertes', value: 'Signal sonore à 30, 15, 10, 5 et 1 minute de la fin, ou flash visuel silencieux' },
+        { label: 'Fiabilité', value: "Chronométrage sans dérive basé sur l'horodatage ; l'examen en cours est restauré après actualisation de la page" },
+        {
+          label: 'Langues',
+          value: 'Anglais, espagnol, japonais, français, allemand, portugais, coréen et italien',
+        },
+      ],
+      extraTitle: 'Tableau de référence du tiers-temps (+25 %)',
+      extraIntro:
+        "Le tiers-temps standard correspond à 25 % du temps de composition. Le minuteur d'examen affiche automatiquement les deux heures de fin ; ce tableau reprend les durées d'épreuve les plus courantes.",
+      colStandard: 'Temps de composition',
+      colExtra: 'Tiers-temps +25 %',
+      colTotal: 'Total avec tiers-temps',
+      units: { hours: '{n} h', minutes: '{n} min', seconds: '{n} s' },
+    },
+
     resetModal: {
       title: "Réinitialiser l'examen en cours ?",
       text: "Le minuteur va s'arrêter et revenir à l'état initial. Le temps écoulé et le temps supplémentaire seront remis à zéro.",

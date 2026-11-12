@@ -348,6 +348,40 @@ const de: Dictionary = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Kurz beantwortet',
+      summary:
+        '<strong>FreeExamTimer</strong> (freeexamtimer.com) ist ein kostenloser Prüfungstimer online und eine Prüfungsuhr mit Countdown im Vollbild für Lehrkräfte, Prüfungsaufsichten und Schüler. Er läuft in jedem Browser – ohne Download, ohne Anmeldung und ohne Werbung. Er unterstützt Einlesezeit mit automatischem Übergang zur Bearbeitungszeit, +25 % Zeitverlängerung als Nachteilsausgleich, akustische Signale und eine Beamer-Anzeige für den Prüfungsraum – für Klausuren, Abitur, Mathe-Klausuren, SAT, GRE, IELTS, IB und viele weitere Prüfungen.',
+      factsTitle: 'FreeExamTimer auf einen Blick',
+      facts: [
+        { label: 'Preis', value: 'Kostenlos – ohne Anmeldung, ohne Werbung, ohne kostenpflichtige Funktionen' },
+        {
+          label: 'Geräte',
+          value: 'Jeder moderne Browser: Windows-PC, Mac, Chromebook, iPhone, iPad, Android und Beamer im Klassenzimmer',
+        },
+        { label: 'Zeitvorgaben', value: '15 Minuten bis 3 Stunden oder jede exakte Dauer in Stunden, Minuten und Sekunden' },
+        { label: 'Einlesezeit', value: '5, 10 oder 15 Minuten, danach automatischer Übergang zur Bearbeitungszeit' },
+        {
+          label: 'Zeitverlängerung',
+          value: '+25 % Nachteilsausgleich, reguläre und verlängerte Endzeit werden nebeneinander angezeigt',
+        },
+        { label: 'Raumanzeige', value: 'Vollbildmodus (Taste F) mit Ziffern, die aus über 30 Metern lesbar sind' },
+        { label: 'Signale', value: 'Töne bei 30, 15, 10, 5 und 1 verbleibender Minute oder stilles visuelles Blinken' },
+        { label: 'Zuverlässigkeit', value: 'Driftfreie Zeitmessung über Zeitstempel; eine laufende Prüfung wird nach dem Neuladen wiederhergestellt' },
+        {
+          label: 'Sprachen',
+          value: 'Englisch, Spanisch, Japanisch, Französisch, Deutsch, Portugiesisch, Koreanisch und Italienisch',
+        },
+      ],
+      extraTitle: 'Schnellübersicht: +25 % Zeitverlängerung',
+      extraIntro:
+        'Die übliche Zeitverlängerung beim Nachteilsausgleich beträgt 25 % der Bearbeitungszeit. Der Prüfungstimer zeigt beide Endzeiten automatisch an; diese Tabelle listet die gängigsten Prüfungsdauern.',
+      colStandard: 'Bearbeitungszeit',
+      colExtra: '+25 % Zeitverlängerung',
+      colTotal: 'Gesamt mit Verlängerung',
+      units: { hours: '{n} Std.', minutes: '{n} Min.', seconds: '{n} Sek.' },
+    },
+
     resetModal: {
       title: 'Aktuelle Prüfung zurücksetzen?',
       text: 'Der Timer stoppt und kehrt in den Ausgangszustand zurück. Abgelaufene Zeit und Zeitverlängerung werden zurückgesetzt.',

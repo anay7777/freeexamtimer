@@ -348,6 +348,40 @@ const pt: Dictionary = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Resposta rápida',
+      summary:
+        '<strong>FreeExamTimer</strong> (freeexamtimer.com) é um cronômetro para prova online grátis e um relógio de contagem regressiva para prova em tela cheia, feito para professores, fiscais de prova e estudantes. Funciona em qualquer navegador, sem download, sem cadastro e sem anúncios. Oferece tempo de leitura com passagem automática para o tempo de escrita, tempo adicional de +25 % para atendimento especializado, alertas sonoros e modo projetor para a sala de prova — ideal para ENEM, vestibular, concursos, provas de matemática, SAT, IELTS, IB e muito mais.',
+      factsTitle: 'FreeExamTimer em resumo',
+      facts: [
+        { label: 'Preço', value: 'Grátis — sem cadastro, sem anúncios e sem recursos pagos' },
+        {
+          label: 'Dispositivos',
+          value: 'Qualquer navegador moderno: PC com Windows, Mac, Chromebook, iPhone, iPad, Android e projetores de sala de aula',
+        },
+        { label: 'Durações predefinidas', value: 'De 15 minutos a 3 horas, ou qualquer duração exata em horas, minutos e segundos' },
+        { label: 'Tempo de leitura', value: '5, 10 ou 15 minutos, com passagem automática para o tempo de escrita' },
+        {
+          label: 'Tempo adicional',
+          value: '+25 % para atendimento especializado, com o horário de término normal e o estendido lado a lado',
+        },
+        { label: 'Exibição na sala', value: 'Modo tela cheia (tecla F) com números legíveis a mais de 30 metros' },
+        { label: 'Alertas', value: 'Sons quando faltam 30, 15, 10, 5 e 1 minuto, ou um alerta visual silencioso' },
+        { label: 'Confiabilidade', value: 'Contagem sem atraso baseada em marcas de tempo; a prova em andamento é restaurada após recarregar a página' },
+        {
+          label: 'Idiomas',
+          value: 'Inglês, espanhol, japonês, francês, alemão, português, coreano e italiano',
+        },
+      ],
+      extraTitle: 'Tabela rápida de tempo adicional (+25 %)',
+      extraIntro:
+        'O tempo adicional padrão para atendimento especializado é de 25 % do tempo de escrita. O cronômetro para prova mostra os dois horários de término automaticamente; esta tabela lista as durações de prova mais comuns.',
+      colStandard: 'Tempo de escrita',
+      colExtra: 'Tempo adicional +25 %',
+      colTotal: 'Total com tempo adicional',
+      units: { hours: '{n} h', minutes: '{n} min', seconds: '{n} s' },
+    },
+
     resetModal: {
       title: 'Reiniciar a prova atual?',
       text: 'O cronômetro vai parar e voltar ao estado inicial. Todo o tempo decorrido e o tempo adicional serão zerados.',

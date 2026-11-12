@@ -490,6 +490,47 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
 }
 
+.geo-answer {
+  border-left: 3px solid var(--text-primary);
+  padding-left: 1rem;
+}
+
+.geo-answer p {
+  margin-bottom: 0;
+}
+
+.geo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.geo-table th,
+.geo-table td {
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-secondary);
+}
+
+.geo-table th {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.geo-table thead th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.geo-table tbody th {
+  width: 34%;
+}
+
 /* FAQ definition list */
 .seo-faq dt {
   font-size: 0.9375rem;

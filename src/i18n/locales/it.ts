@@ -348,6 +348,40 @@ const it: Dictionary = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Risposta rapida',
+      summary:
+        "<strong>FreeExamTimer</strong> (freeexamtimer.com) è un timer per esami online gratis e un orologio per esami con conto alla rovescia a schermo intero, pensato per docenti, commissari, sorveglianti e studenti. Funziona in qualsiasi browser senza download, senza registrazione e senza pubblicità. Supporta il tempo di lettura con passaggio automatico al tempo di scrittura, il tempo aggiuntivo del +25 % per le misure compensative, avvisi sonori e la modalità proiettore per l'aula d'esame: ideale per maturità, concorsi, test di ammissione, verifiche di matematica, SAT, IELTS, IB e molto altro.",
+      factsTitle: 'FreeExamTimer in sintesi',
+      facts: [
+        { label: 'Prezzo', value: 'Gratis: senza registrazione, senza pubblicità e senza funzioni a pagamento' },
+        {
+          label: 'Dispositivi',
+          value: "Qualsiasi browser moderno: PC Windows, Mac, Chromebook, iPhone, iPad, Android e proiettori d'aula",
+        },
+        { label: 'Durate predefinite', value: 'Da 15 minuti a 3 ore, o qualsiasi durata esatta in ore, minuti e secondi' },
+        { label: 'Tempo di lettura', value: '5, 10 o 15 minuti, poi passaggio automatico al tempo di scrittura' },
+        {
+          label: 'Tempo aggiuntivo',
+          value: '+25 % per le misure compensative, con orario di fine standard ed esteso affiancati',
+        },
+        { label: "Display per l'aula", value: 'Modalità schermo intero (tasto F) con cifre leggibili da oltre 30 metri' },
+        { label: 'Avvisi', value: 'Suoni a 30, 15, 10, 5 e 1 minuto dalla fine, oppure un lampo visivo silenzioso' },
+        { label: 'Affidabilità', value: "Cronometraggio senza deriva basato su timestamp; l'esame in corso viene ripristinato dopo il ricaricamento della pagina" },
+        {
+          label: 'Lingue',
+          value: 'Inglese, spagnolo, giapponese, francese, tedesco, portoghese, coreano e italiano',
+        },
+      ],
+      extraTitle: 'Tabella rapida del tempo aggiuntivo (+25 %)',
+      extraIntro:
+        "Il tempo aggiuntivo standard per le misure compensative è il 25 % del tempo di scrittura. Il timer per esami mostra automaticamente entrambi gli orari di fine; questa tabella riporta le durate d'esame più comuni.",
+      colStandard: 'Tempo di scrittura',
+      colExtra: 'Tempo aggiuntivo +25 %',
+      colTotal: 'Totale con tempo aggiuntivo',
+      units: { hours: '{n} h', minutes: '{n} min', seconds: '{n} s' },
+    },
+
     resetModal: {
       title: "Azzerare l'esame in corso?",
       text: "Il timer si fermerà e tornerà allo stato iniziale. Il tempo trascorso e il tempo aggiuntivo verranno azzerati.",

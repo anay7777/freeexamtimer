@@ -5,7 +5,7 @@ import ExamApp from '../ExamApp.astro';
 import Footer from '../Footer.astro';
 ---
 
-<Layout i18nPath="/">
+<Layout i18nPath="/" speakable={["h1", "#quick-answer"]}>
   <Nav active="home" examControls={true} />
   <ExamApp />
   <Footer />

@@ -11,6 +11,11 @@ interface Props {
   i18nPath?: string;
   ogImage?: string;
   includeFaq?: boolean;
+  /** Short page name for the BreadcrumbList; omit on the home page. */
+  pageName?: string;
+  /** CSS selectors of concise, quotable passages (schema.org `speakable`). */
+  speakable?: string[];
+  howTo?: { name: string; description: string; steps: { name: string; text: string }[] };
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -24,6 +29,9 @@ const {
   i18nPath,
   ogImage = "https://freeexamtimer.com/og-image.png",
   includeFaq = false,
+  pageName,
+  speakable = ["h1"],
+  howTo,
 } = Astro.props;
 
 const canonicalUrl = i18nPath
@@ -40,29 +48,112 @@ const alternates = i18nPath
 const siteName = "FreeExamTimer";
 const homeUrl = absoluteUrl(translatePath("/"));
 
-const webAppJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "@id": `${homeUrl}#webapp`,
-  "name": "FreeExamTimer",
-  "url": homeUrl,
-  "inLanguage": lang,
-  "description": t.meta.schemaDescription,
-  "applicationCategory": "EducationalApplication",
-  "operatingSystem": "Any",
-  "browserRequirements": "Requires a modern web browser with JavaScript enabled",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-  },
-  "featureList": t.meta.schemaFeatures,
-  "publisher": {
+const orgId = "https://freeexamtimer.com/#organization";
+const websiteId = "https://freeexamtimer.com/#website";
+const webAppId = `${homeUrl}#webapp`;
+const webPageId = `${canonicalUrl}#webpage`;
+const keywords = t.meta.keywords.split(",").map((k) => k.trim());
+const buildDate = new Date().toISOString().slice(0, 10);
+
+const graph: Record<string, unknown>[] = [
+  {
     "@type": "Organization",
-    "name": "FreeExamTimer",
+    "@id": orgId,
+    "name": siteName,
     "url": "https://freeexamtimer.com/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://freeexamtimer.com/web-app-manifest-512x512.png",
+      "width": 512,
+      "height": 512,
+    },
   },
-};
+  {
+    "@type": "WebSite",
+    "@id": websiteId,
+    "name": siteName,
+    "alternateName": ["Free Exam Timer", "freeexamtimer.com"],
+    "url": "https://freeexamtimer.com/",
+    "inLanguage": Object.keys(languages),
+    "publisher": { "@id": orgId },
+  },
+  {
+    "@type": "WebPage",
+    "@id": webPageId,
+    "url": canonicalUrl,
+    "name": title,
+    "description": description,
+    "inLanguage": lang,
+    "isPartOf": { "@id": websiteId },
+    "about": { "@id": webAppId },
+    ...(!pageName && { "mainEntity": { "@id": webAppId } }),
+    "keywords": keywords,
+    "dateModified": buildDate,
+    "primaryImageOfPage": { "@type": "ImageObject", "url": ogImage },
+    "speakable": { "@type": "SpeakableSpecification", "cssSelector": speakable },
+    ...(pageName && { "breadcrumb": { "@id": `${canonicalUrl}#breadcrumb` } }),
+  },
+  {
+    "@type": "WebApplication",
+    "@id": webAppId,
+    "name": siteName,
+    "alternateName": "Free Exam Timer",
+    "url": homeUrl,
+    "inLanguage": lang,
+    "availableLanguage": Object.keys(languages),
+    "description": t.meta.schemaDescription,
+    "applicationCategory": "EducationalApplication",
+    "applicationSubCategory": "Exam timer",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled",
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+    },
+    "featureList": t.meta.schemaFeatures,
+    "keywords": keywords,
+    "audience": [
+      { "@type": "EducationalAudience", "educationalRole": "teacher" },
+      { "@type": "EducationalAudience", "educationalRole": "invigilator" },
+      { "@type": "EducationalAudience", "educationalRole": "student" },
+    ],
+    "publisher": { "@id": orgId },
+  },
+];
+
+if (pageName) {
+  graph.push({
+    "@type": "BreadcrumbList",
+    "@id": `${canonicalUrl}#breadcrumb`,
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": siteName, "item": homeUrl },
+      { "@type": "ListItem", "position": 2, "name": pageName, "item": canonicalUrl },
+    ],
+  });
+}
+
+if (howTo) {
+  graph.push({
+    "@type": "HowTo",
+    "@id": `${canonicalUrl}#howto`,
+    "name": howTo.name,
+    "description": howTo.description,
+    "inLanguage": lang,
+    "tool": { "@type": "HowToTool", "name": siteName },
+    "totalTime": "PT2M",
+    "step": howTo.steps.map((step, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": step.name,
+      "text": step.text,
+      "url": `${canonicalUrl}#step-${i + 1}`,
+    })),
+  });
+}
+
+const webAppJsonLd = { "@context": "https://schema.org", "@graph": graph };
 
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -107,6 +198,7 @@ const faqJsonLd = {
     <!-- Canonical & Sitemap -->
     <link rel="canonical" href={canonicalUrl} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="LLM-friendly summary" href="/llms.txt" />
 
     <!-- Language alternates (hreflang) -->
     {alternates.map((alt) => (
@@ -149,7 +241,7 @@ const faqJsonLd = {
     <meta name="apple-mobile-web-app-title" content="FreeExamTimer" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Schema.org WebApplication -->
+    <!-- Schema.org graph: Organization, WebSite, WebPage, WebApplication (+ Breadcrumb / HowTo) -->
     <script
       type="application/ld+json"
       is:inline

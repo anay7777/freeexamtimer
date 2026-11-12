@@ -1,6 +1,7 @@
 ---
 import { MAJOR_COUNTRY_TIMEZONES } from '../data/timezones';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import { extraTimeRows } from '../lib/extra-time';
 
 const regions = ['System', 'Asia & Pacific', 'Americas', 'Europe', 'Middle East & Africa'] as const;
 
@@ -8,6 +9,7 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const a = t.app;
 const fmtN = (template: string, n: number) => template.replace('{n}', String(n));
+const extraRows = extraTimeRows(a.geo.units);
 
 // Runtime strings for src/scripts/exam-ui.ts; "<" is escaped so the JSON can't close the script tag
 const clientStrings = JSON.stringify({ ...t.client, sounds: a.sounds }).replace(/</g, '\\u003c');
@@ -581,6 +583,25 @@ const clientStrings = JSON.stringify({ ...t.client, sounds: a.sounds }).replace(
 
         <div class="seo-grid">
 
+          <section class="seo-block geo-answer" id="quick-answer" aria-labelledby="quick-answer-title">
+            <h3 id="quick-answer-title">{a.geo.summaryTitle}</h3>
+            <p set:html={a.geo.summary} />
+          </section>
+
+          <section class="seo-block">
+            <h3>{a.geo.factsTitle}</h3>
+            <table class="geo-table">
+              <tbody>
+                {a.geo.facts.map((fact) => (
+                  <tr>
+                    <th scope="row">{fact.label}</th>
+                    <td>{fact.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
           <section class="seo-block">
             <h3>{a.seo.what.title}</h3>
             {a.seo.what.paragraphs.map((html) => <p set:html={html} />)}
@@ -591,6 +612,29 @@ const clientStrings = JSON.stringify({ ...t.client, sounds: a.sounds }).replace(
             <ul>
               {a.seo.core.items.map((html) => <li set:html={html} />)}
             </ul>
+          </section>
+
+          <section class="seo-block">
+            <h3>{a.geo.extraTitle}</h3>
+            <p>{a.geo.extraIntro}</p>
+            <table class="geo-table">
+              <thead>
+                <tr>
+                  <th scope="col">{a.geo.colStandard}</th>
+                  <th scope="col">{a.geo.colExtra}</th>
+                  <th scope="col">{a.geo.colTotal}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {extraRows.map((row) => (
+                  <tr>
+                    <td>{row.standard}</td>
+                    <td>{row.extra}</td>
+                    <td>{row.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
 
           <section class="seo-block">

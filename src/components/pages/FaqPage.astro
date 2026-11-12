@@ -14,6 +14,8 @@ const translatePath = useTranslatedPath(lang);
   description={t.meta.faq.description}
   i18nPath="/faq/"
   includeFaq={true}
+  pageName={t.nav.faq}
+  speakable={["h1", ".seo-faq dt", ".seo-faq dd"]}
 >
   <Nav active="faq" />
   <main class="mx-auto max-w-[760px] px-5 pt-24 pb-20">

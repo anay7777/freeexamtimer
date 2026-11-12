@@ -348,6 +348,40 @@ const es: Dictionary = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Respuesta rápida',
+      summary:
+        '<strong>FreeExamTimer</strong> (freeexamtimer.com) es un temporizador de examen online gratis y un reloj de cuenta regresiva para examen en pantalla completa, pensado para profesores, vigilantes de examen y estudiantes. Funciona en cualquier navegador sin descargas, sin registro y sin anuncios. Incluye tiempo de lectura con paso automático al tiempo de escritura, tiempo adicional del +25 % para adaptaciones, avisos sonoros y modo proyector para el aula, ideal para oposiciones, exámenes de matemáticas, SAT, GRE, IELTS, ENEM, JEE, NEET, GCSE e IB.',
+      factsTitle: 'FreeExamTimer en resumen',
+      facts: [
+        { label: 'Precio', value: 'Gratis: sin registro, sin anuncios y sin funciones de pago' },
+        {
+          label: 'Dispositivos',
+          value: 'Cualquier navegador moderno: PC con Windows, Mac, Chromebook, iPhone, iPad, Android y proyectores de aula',
+        },
+        { label: 'Duraciones predefinidas', value: 'De 15 minutos a 3 horas, o cualquier duración exacta en horas, minutos y segundos' },
+        { label: 'Tiempo de lectura', value: '5, 10 o 15 minutos, con paso automático al tiempo de escritura' },
+        {
+          label: 'Tiempo adicional',
+          value: '+25 % para adaptaciones de acceso, con la hora de fin estándar y la ampliada una al lado de la otra',
+        },
+        { label: 'Pantalla del aula', value: 'Modo pantalla completa (tecla F) con cifras legibles a más de 30 metros' },
+        { label: 'Avisos', value: 'Sonidos a falta de 30, 15, 10, 5 y 1 minuto, o un destello visual silencioso' },
+        { label: 'Fiabilidad', value: 'Cronometraje sin desfase basado en marcas de tiempo; el examen en curso se recupera tras recargar la página' },
+        {
+          label: 'Idiomas',
+          value: 'Inglés, español, japonés, francés, alemán, portugués, coreano e italiano',
+        },
+      ],
+      extraTitle: 'Tabla rápida de tiempo adicional (+25 %)',
+      extraIntro:
+        'El tiempo adicional habitual por adaptaciones es el 25 % del tiempo de escritura. El temporizador de examen muestra ambas horas de fin automáticamente; esta tabla recoge las duraciones más comunes.',
+      colStandard: 'Tiempo de escritura',
+      colExtra: 'Tiempo adicional +25 %',
+      colTotal: 'Total con tiempo adicional',
+      units: { hours: '{n} h', minutes: '{n} min', seconds: '{n} s' },
+    },
+
     resetModal: {
       title: '¿Reiniciar el examen actual?',
       text: 'El temporizador se detendrá y volverá al estado inicial. Se restablecerán el tiempo transcurrido y el tiempo adicional.',

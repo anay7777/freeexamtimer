@@ -350,6 +350,40 @@ const en = {
       },
     },
 
+    geo: {
+      summaryTitle: 'Quick answer',
+      summary:
+        '<strong>FreeExamTimer</strong> (freeexamtimer.com) is a free online exam timer and full-screen exam countdown clock for teachers, invigilators and students. It runs in any web browser with no download, no signup and no ads. It supports reading time with automatic handoff to writing time, +25% extra time for access arrangements, audible chimes and a projector hall display for the SAT, GRE, IELTS, JEE, NEET, GCSE, IB, CAT, UPSC and other competitive exams.',
+      factsTitle: 'FreeExamTimer at a glance',
+      facts: [
+        { label: 'Price', value: 'Free — no signup, no ads, no paywalled features' },
+        {
+          label: 'Devices',
+          value: 'Any modern browser: Windows PC, Mac, Chromebook, iPhone, iPad, Android and classroom projectors',
+        },
+        { label: 'Duration presets', value: '15 minutes to 3 hours, or any exact hours, minutes and seconds' },
+        { label: 'Reading time', value: '5, 10 or 15 minutes, then an automatic handoff to writing time' },
+        {
+          label: 'Extra time',
+          value: '+25% access arrangements, with standard and extended finish clocks shown side by side',
+        },
+        { label: 'Hall display', value: 'Full-screen mode (F key) with numerals readable from 30+ metres' },
+        { label: 'Alerts', value: 'Chimes at 30, 15, 10, 5 and 1 minute remaining, or a silent visual flash' },
+        { label: 'Reliability', value: 'Drift-free timestamp timing; a running exam is restored after a page refresh' },
+        {
+          label: 'Languages',
+          value: 'English, Spanish, Japanese, French, German, Portuguese, Korean and Italian',
+        },
+      ],
+      extraTitle: '+25% Extra Time Quick Reference',
+      extraIntro:
+        'Standard access-arrangement extra time is 25% of the writing time. The exam timer shows both finish times automatically; this table lists the most common exam durations.',
+      colStandard: 'Writing time',
+      colExtra: '+25% extra time',
+      colTotal: 'Total with extra time',
+      units: { hours: '{n} h', minutes: '{n} min', seconds: '{n} s' },
+    },
+
     resetModal: {
       title: 'Reset current exam?',
       text: 'The timer will stop and revert to idle. Any elapsed time and extra time will be reset.',

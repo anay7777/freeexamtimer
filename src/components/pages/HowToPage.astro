@@ -7,6 +7,12 @@ import { getLangFromUrl, useTranslations, useTranslatedPath } from '../../i18n/u
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const translatePath = useTranslatedPath(lang);
+
+const howTo = {
+  name: t.howTo.title,
+  description: t.meta.howTo.description,
+  steps: t.howTo.steps.map((step) => ({ name: step.title.replace(/^\d+\.\s*/, ''), text: step.text })),
+};
 ---
 
 <Layout
@@ -14,18 +20,21 @@ const translatePath = useTranslatedPath(lang);
   description={t.meta.howTo.description}
   i18nPath="/how-to/"
   includeFaq={false}
+  pageName={t.nav.howTo}
+  speakable={["h1", "#how-to-intro"]}
+  howTo={howTo}
 >
   <Nav active="how-to" />
   <main class="mx-auto max-w-[720px] px-5 pt-24 pb-20">
     <p class="eyebrow">{t.howTo.eyebrow}</p>
     <h1 class="mt-2 text-[40px] leading-[44px] font-semibold tracking-[-2px]">{t.howTo.title}</h1>
-    <p class="mt-4 text-base leading-6 text-[var(--text-secondary)]">
+    <p class="mt-4 text-base leading-6 text-[var(--text-secondary)]" id="how-to-intro">
       {t.howTo.intro}
     </p>
 
     <ol class="mt-10 flex flex-col gap-8">
-      {t.howTo.steps.map((step) => (
-        <li>
+      {t.howTo.steps.map((step, i) => (
+        <li id={`step-${i + 1}`}>
           <p class="text-sm font-medium">{step.title}</p>
           <p class="mt-1 text-sm leading-5 text-[var(--text-secondary)]">
             {step.text}
